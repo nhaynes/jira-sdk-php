@@ -1,0 +1,43 @@
+<?php
+
+namespace JiraSdk\Model;
+
+class CustomFieldValueUpdateDetails
+{
+    /**
+     * @var array
+     */
+    protected $initialized = array();
+    public function isInitialized($property): bool
+    {
+        return array_key_exists($property, $this->initialized);
+    }
+    /**
+     * The list of custom field update details.
+     *
+     * @var CustomFieldValueUpdate[]
+     */
+    protected $updates;
+    /**
+     * The list of custom field update details.
+     *
+     * @return CustomFieldValueUpdate[]
+     */
+    public function getUpdates(): array
+    {
+        return $this->updates;
+    }
+    /**
+     * The list of custom field update details.
+     *
+     * @param CustomFieldValueUpdate[] $updates
+     *
+     * @return self
+     */
+    public function setUpdates(array $updates): self
+    {
+        $this->initialized['updates'] = true;
+        $this->updates = $updates;
+        return $this;
+    }
+}

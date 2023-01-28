@@ -1,0 +1,71 @@
+<?php
+
+namespace JiraSdk\Model;
+
+class JqlQueryClauseTimePredicate extends \ArrayObject
+{
+    /**
+     * @var array
+     */
+    protected $initialized = array();
+    public function isInitialized($property): bool
+    {
+        return array_key_exists($property, $this->initialized);
+    }
+    /**
+     * The operator between the field and the operand.
+     *
+     * @var string
+     */
+    protected $operator;
+    /**
+     * Details of an operand in a JQL clause.
+     *
+     * @var mixed[]
+     */
+    protected $operand;
+    /**
+     * The operator between the field and the operand.
+     *
+     * @return string
+     */
+    public function getOperator(): string
+    {
+        return $this->operator;
+    }
+    /**
+     * The operator between the field and the operand.
+     *
+     * @param string $operator
+     *
+     * @return self
+     */
+    public function setOperator(string $operator): self
+    {
+        $this->initialized['operator'] = true;
+        $this->operator = $operator;
+        return $this;
+    }
+    /**
+     * Details of an operand in a JQL clause.
+     *
+     * @return mixed[]
+     */
+    public function getOperand(): iterable
+    {
+        return $this->operand;
+    }
+    /**
+     * Details of an operand in a JQL clause.
+     *
+     * @param mixed[] $operand
+     *
+     * @return self
+     */
+    public function setOperand(iterable $operand): self
+    {
+        $this->initialized['operand'] = true;
+        $this->operand = $operand;
+        return $this;
+    }
+}

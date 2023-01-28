@@ -1,0 +1,43 @@
+{
+    "name": "nhaynes/jira-sdk-php",
+    "description": "Jira SDK generated using janephp from the Jira Cloud OpenAPI spec.",
+    "keywords": ["jira", "atlassian", "sdk", "api", "issues", "tickets", "openapi", "janephp"],
+    "type": "library",
+    "homepage": "https://github.com/nhaynes/jira-sdk-php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nick Haynes",
+            "homepage": "https://github.com/nhaynes"
+        }
+    ],
+    "require": {
+        "jane-php/open-api-runtime": "^7.4"
+    },
+    "require-dev": {
+        "jane-php/open-api-3": "^7.4",
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "JiraSdk\\": "generated/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JiraSdk\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "cs": [
+            "vendor/bin/php-cs-fixer fix generated"
+        ],
+        "test": [
+            "vendor/bin/phpunit"
+        ],
+        "generate-sdk": [
+            "vendor/bin/jane-openapi generate"
+        ]
+    }
+}
