@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class Changelog
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The ID of the changelog.
      *
@@ -42,72 +49,69 @@ class Changelog
      * @var ChangelogHistoryMetadata
      */
     protected $historyMetadata;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The ID of the changelog.
-     *
-     * @return string
      */
     public function getId(): string
     {
         return $this->id;
     }
+
     /**
      * The ID of the changelog.
-     *
-     * @param string $id
-     *
-     * @return self
      */
     public function setId(string $id): self
     {
         $this->initialized['id'] = true;
         $this->id = $id;
+
         return $this;
     }
+
     /**
      * The user who made the change.
-     *
-     * @return ChangelogAuthor
      */
     public function getAuthor(): ChangelogAuthor
     {
         return $this->author;
     }
+
     /**
      * The user who made the change.
-     *
-     * @param ChangelogAuthor $author
-     *
-     * @return self
      */
     public function setAuthor(ChangelogAuthor $author): self
     {
         $this->initialized['author'] = true;
         $this->author = $author;
+
         return $this;
     }
+
     /**
      * The date on which the change took place.
-     *
-     * @return \DateTime
      */
     public function getCreated(): \DateTime
     {
         return $this->created;
     }
+
     /**
      * The date on which the change took place.
-     *
-     * @param \DateTime $created
-     *
-     * @return self
      */
     public function setCreated(\DateTime $created): self
     {
         $this->initialized['created'] = true;
         $this->created = $created;
+
         return $this;
     }
+
     /**
      * The list of items changed.
      *
@@ -117,39 +121,36 @@ class Changelog
     {
         return $this->items;
     }
+
     /**
      * The list of items changed.
      *
      * @param ChangeDetails[] $items
-     *
-     * @return self
      */
     public function setItems(array $items): self
     {
         $this->initialized['items'] = true;
         $this->items = $items;
+
         return $this;
     }
+
     /**
      * The history metadata associated with the changed.
-     *
-     * @return ChangelogHistoryMetadata
      */
     public function getHistoryMetadata(): ChangelogHistoryMetadata
     {
         return $this->historyMetadata;
     }
+
     /**
      * The history metadata associated with the changed.
-     *
-     * @param ChangelogHistoryMetadata $historyMetadata
-     *
-     * @return self
      */
     public function setHistoryMetadata(ChangelogHistoryMetadata $historyMetadata): self
     {
         $this->initialized['historyMetadata'] = true;
         $this->historyMetadata = $historyMetadata;
+
         return $this;
     }
 }

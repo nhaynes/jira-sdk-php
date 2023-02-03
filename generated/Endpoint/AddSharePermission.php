@@ -1,73 +1,91 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class AddSharePermission extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class AddSharePermission extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.
-
-    Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).
-
-    **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
-    *
-    * @param int $id The ID of the filter.
-    * @param \JiraSdk\Model\SharePermissionInputBean $requestBody
-    */
-    public function __construct(int $id, \JiraSdk\Model\SharePermissionInputBean $requestBody)
+     * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.
+     *
+     * Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).
+     *
+     **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
+     *
+     * @param int $id the ID of the filter
+     */
+    public function __construct(int $id, \JiraSdk\Api\Model\SharePermissionInputBean $requestBody)
     {
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/filter/{id}/permission');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/filter/{id}/permission');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\SharePermissionInputBean) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\SharePermissionInputBean) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\AddSharePermissionBadRequestException
-     * @throws \JiraSdk\Exception\AddSharePermissionUnauthorizedException
-     * @throws \JiraSdk\Exception\AddSharePermissionNotFoundException
+     * @return \JiraSdk\Api\Model\SharePermission[]|null
      *
-     * @return null|\JiraSdk\Model\SharePermission[]
+     * @throws \JiraSdk\Api\Exception\AddSharePermissionBadRequestException
+     * @throws \JiraSdk\Api\Exception\AddSharePermissionUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\AddSharePermissionNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (201 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\SharePermission[]', 'json');
+        if ((null === $contentType) === false && (201 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\SharePermission[]', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\AddSharePermissionBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\AddSharePermissionBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\AddSharePermissionUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\AddSharePermissionUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\AddSharePermissionNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\AddSharePermissionNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

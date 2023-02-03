@@ -1,79 +1,97 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetCommentProperty extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetCommentProperty extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $commentId;
     protected $propertyKey;
+
     /**
-    * Returns the value of a comment property.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:**
-
-    *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-    *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-    *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-    *
-    * @param string $commentId The ID of the comment.
-    * @param string $propertyKey The key of the property.
-    */
+     * Returns the value of a comment property.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:**
+     *
+     *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     *
+     * @param string $commentId   the ID of the comment
+     * @param string $propertyKey the key of the property
+     */
     public function __construct(string $commentId, string $propertyKey)
     {
         $this->commentId = $commentId;
         $this->propertyKey = $propertyKey;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{commentId}', '{propertyKey}'), array($this->commentId, $this->propertyKey), '/rest/api/3/comment/{commentId}/properties/{propertyKey}');
+        return str_replace(['{commentId}', '{propertyKey}'], [$this->commentId, $this->propertyKey], '/rest/api/3/comment/{commentId}/properties/{propertyKey}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetCommentPropertyBadRequestException
-     * @throws \JiraSdk\Exception\GetCommentPropertyUnauthorizedException
-     * @throws \JiraSdk\Exception\GetCommentPropertyForbiddenException
-     * @throws \JiraSdk\Exception\GetCommentPropertyNotFoundException
+     * @return \JiraSdk\Api\Model\EntityProperty|null
      *
-     * @return null|\JiraSdk\Model\EntityProperty
+     * @throws \JiraSdk\Api\Exception\GetCommentPropertyBadRequestException
+     * @throws \JiraSdk\Api\Exception\GetCommentPropertyUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetCommentPropertyForbiddenException
+     * @throws \JiraSdk\Api\Exception\GetCommentPropertyNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\EntityProperty', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\EntityProperty', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\GetCommentPropertyBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\GetCommentPropertyBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetCommentPropertyUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetCommentPropertyUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\GetCommentPropertyForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\GetCommentPropertyForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetCommentPropertyNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetCommentPropertyNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

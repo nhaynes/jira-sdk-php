@@ -1,64 +1,82 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetAlternativeIssueTypes extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetAlternativeIssueTypes extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:** None.
-    *
-    * @param string $id The ID of the issue type.
-    */
+     * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:** None.
+     *
+     * @param string $id the ID of the issue type
+     */
     public function __construct(string $id)
     {
         $this->id = $id;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/issuetype/{id}/alternatives');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/issuetype/{id}/alternatives');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetAlternativeIssueTypesUnauthorizedException
-     * @throws \JiraSdk\Exception\GetAlternativeIssueTypesNotFoundException
+     * @return \JiraSdk\Api\Model\IssueTypeDetails[]|null
      *
-     * @return null|\JiraSdk\Model\IssueTypeDetails[]
+     * @throws \JiraSdk\Api\Exception\GetAlternativeIssueTypesUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetAlternativeIssueTypesNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\IssueTypeDetails[]', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\IssueTypeDetails[]', 'json');
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetAlternativeIssueTypesUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetAlternativeIssueTypesUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetAlternativeIssueTypesNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetAlternativeIssueTypesNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

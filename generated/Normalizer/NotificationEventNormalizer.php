@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class NotificationEventNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\NotificationEvent';
+        return 'JiraSdk\\Api\\Model\\NotificationEvent' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\NotificationEvent';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\NotificationEvent' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class NotificationEventNormalizer implements DenormalizerInterface, NormalizerIn
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\NotificationEvent();
+        $object = new \JiraSdk\Api\Model\NotificationEvent();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -52,16 +65,18 @@ class NotificationEventNormalizer implements DenormalizerInterface, NormalizerIn
             $object->setDescription($data['description']);
         }
         if (\array_key_exists('templateEvent', $data)) {
-            $object->setTemplateEvent($this->denormalizer->denormalize($data['templateEvent'], 'JiraSdk\\Model\\NotificationEventTemplateEvent', 'json', $context));
+            $object->setTemplateEvent($this->denormalizer->denormalize($data['templateEvent'], 'JiraSdk\\Api\\Model\\NotificationEventTemplateEvent', 'json', $context));
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('id') && null !== $object->getId()) {
             $data['id'] = $object->getId();
         }
@@ -74,6 +89,7 @@ class NotificationEventNormalizer implements DenormalizerInterface, NormalizerIn
         if ($object->isInitialized('templateEvent') && null !== $object->getTemplateEvent()) {
             $data['templateEvent'] = $this->normalizer->normalize($object->getTemplateEvent(), 'json', $context);
         }
+
         return $data;
     }
 }

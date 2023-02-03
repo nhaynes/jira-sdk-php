@@ -1,71 +1,88 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreateScreenScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreateScreenScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
+
     /**
      * Creates a screen scheme.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-     *
-     * @param \JiraSdk\Model\ScreenSchemeDetails $requestBody
      */
-    public function __construct(\JiraSdk\Model\ScreenSchemeDetails $requestBody)
+    public function __construct(\JiraSdk\Api\Model\ScreenSchemeDetails $requestBody)
     {
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
         return '/rest/api/3/screenscheme';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\ScreenSchemeDetails) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\ScreenSchemeDetails) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreateScreenSchemeBadRequestException
-     * @throws \JiraSdk\Exception\CreateScreenSchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\CreateScreenSchemeForbiddenException
-     * @throws \JiraSdk\Exception\CreateScreenSchemeNotFoundException
+     * @return \JiraSdk\Api\Model\ScreenSchemeId|null
      *
-     * @return null|\JiraSdk\Model\ScreenSchemeId
+     * @throws \JiraSdk\Api\Exception\CreateScreenSchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreateScreenSchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\CreateScreenSchemeForbiddenException
+     * @throws \JiraSdk\Api\Exception\CreateScreenSchemeNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (201 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\ScreenSchemeId', 'json');
+        if ((null === $contentType) === false && (201 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ScreenSchemeId', 'json');
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\CreateScreenSchemeBadRequestException($response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\CreateScreenSchemeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\CreateScreenSchemeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\CreateScreenSchemeUnauthorizedException($response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\CreateScreenSchemeForbiddenException($response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\CreateScreenSchemeForbiddenException($response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\CreateScreenSchemeNotFoundException($response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\CreateScreenSchemeNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

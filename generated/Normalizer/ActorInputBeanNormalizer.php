@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ActorInputBeanNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\ActorInputBean';
+        return 'JiraSdk\\Api\\Model\\ActorInputBean' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\ActorInputBean';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\ActorInputBean' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,60 +51,63 @@ class ActorInputBeanNormalizer implements DenormalizerInterface, NormalizerInter
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\ActorInputBean();
+        $object = new \JiraSdk\Api\Model\ActorInputBean();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('user', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['user'] as $value) {
                 $values[] = $value;
             }
             $object->setUser($values);
         }
         if (\array_key_exists('groupId', $data)) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($data['groupId'] as $value_1) {
                 $values_1[] = $value_1;
             }
             $object->setGroupId($values_1);
         }
         if (\array_key_exists('group', $data)) {
-            $values_2 = array();
+            $values_2 = [];
             foreach ($data['group'] as $value_2) {
                 $values_2[] = $value_2;
             }
             $object->setGroup($values_2);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('user') && null !== $object->getUser()) {
-            $values = array();
+            $values = [];
             foreach ($object->getUser() as $value) {
                 $values[] = $value;
             }
             $data['user'] = $values;
         }
         if ($object->isInitialized('groupId') && null !== $object->getGroupId()) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($object->getGroupId() as $value_1) {
                 $values_1[] = $value_1;
             }
             $data['groupId'] = $values_1;
         }
         if ($object->isInitialized('group') && null !== $object->getGroup()) {
-            $values_2 = array();
+            $values_2 = [];
             foreach ($object->getGroup() as $value_2) {
                 $values_2[] = $value_2;
             }
             $data['group'] = $values_2;
         }
+
         return $data;
     }
 }

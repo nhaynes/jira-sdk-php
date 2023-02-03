@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class ProjectIssueTypes
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * Project ID details.
      *
@@ -19,35 +26,38 @@ class ProjectIssueTypes
      */
     protected $project;
     /**
-     * IDs of the issue types
+     * IDs of the issue types.
      *
      * @var string[]
      */
     protected $issueTypes;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * Project ID details.
-     *
-     * @return ProjectId
      */
     public function getProject(): ProjectId
     {
         return $this->project;
     }
+
     /**
      * Project ID details.
-     *
-     * @param ProjectId $project
-     *
-     * @return self
      */
     public function setProject(ProjectId $project): self
     {
         $this->initialized['project'] = true;
         $this->project = $project;
+
         return $this;
     }
+
     /**
-     * IDs of the issue types
+     * IDs of the issue types.
      *
      * @return string[]
      */
@@ -55,17 +65,17 @@ class ProjectIssueTypes
     {
         return $this->issueTypes;
     }
+
     /**
-     * IDs of the issue types
+     * IDs of the issue types.
      *
      * @param string[] $issueTypes
-     *
-     * @return self
      */
     public function setIssueTypes(array $issueTypes): self
     {
         $this->initialized['issueTypes'] = true;
         $this->issueTypes = $issueTypes;
+
         return $this;
     }
 }

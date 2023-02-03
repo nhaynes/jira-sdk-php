@@ -1,81 +1,97 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class ReorderIssueTypesInIssueTypeScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class ReorderIssueTypesInIssueTypeScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $issueTypeSchemeId;
+
     /**
-    * Changes the order of issue types in an issue type scheme.
-
-    The request body parameters must meet the following requirements:
-
-    *  all of the issue types must belong to the issue type scheme.
-    *  either `after` or `position` must be provided.
-    *  the issue type in `after` must not be in the issue type list.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param int $issueTypeSchemeId The ID of the issue type scheme.
-    * @param \JiraSdk\Model\OrderOfIssueTypes $requestBody
-    */
-    public function __construct(int $issueTypeSchemeId, \JiraSdk\Model\OrderOfIssueTypes $requestBody)
+     * Changes the order of issue types in an issue type scheme.
+     *
+     * The request body parameters must meet the following requirements:
+     *
+     *  all of the issue types must belong to the issue type scheme.
+     *  either `after` or `position` must be provided.
+     *  the issue type in `after` must not be in the issue type list.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param int $issueTypeSchemeId the ID of the issue type scheme
+     */
+    public function __construct(int $issueTypeSchemeId, \JiraSdk\Api\Model\OrderOfIssueTypes $requestBody)
     {
         $this->issueTypeSchemeId = $issueTypeSchemeId;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{issueTypeSchemeId}'), array($this->issueTypeSchemeId), '/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move');
+        return str_replace(['{issueTypeSchemeId}'], [$this->issueTypeSchemeId], '/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\OrderOfIssueTypes) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\OrderOfIssueTypes) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeBadRequestException
-     * @throws \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeForbiddenException
-     * @throws \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeForbiddenException
+     * @throws \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeBadRequestException($response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeUnauthorizedException($response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeForbiddenException($response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeForbiddenException($response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\ReorderIssueTypesInIssueTypeSchemeNotFoundException($response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\ReorderIssueTypesInIssueTypeSchemeNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

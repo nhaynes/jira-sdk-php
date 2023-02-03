@@ -1,41 +1,60 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class RemoveProjectCategory extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class RemoveProjectCategory extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
      * Deletes a project category.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param int $id ID of the project category to delete.
+     * @param int $id ID of the project category to delete
      */
     public function __construct(int $id)
     {
         $this->id = $id;
     }
+
     public function getMethod(): string
     {
         return 'DELETE';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/projectCategory/{id}');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/projectCategory/{id}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\RemoveProjectCategoryUnauthorizedException
-     * @throws \JiraSdk\Exception\RemoveProjectCategoryForbiddenException
-     * @throws \JiraSdk\Exception\RemoveProjectCategoryNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\RemoveProjectCategoryUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\RemoveProjectCategoryForbiddenException
+     * @throws \JiraSdk\Api\Exception\RemoveProjectCategoryNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
@@ -45,17 +64,13 @@ class RemoveProjectCategory extends \JiraSdk\Runtime\Client\BaseEndpoint impleme
             return null;
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\RemoveProjectCategoryUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\RemoveProjectCategoryUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\RemoveProjectCategoryForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\RemoveProjectCategoryForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\RemoveProjectCategoryNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\RemoveProjectCategoryNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

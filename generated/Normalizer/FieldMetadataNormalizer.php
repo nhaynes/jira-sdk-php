@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class FieldMetadataNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\FieldMetadata';
+        return 'JiraSdk\\Api\\Model\\FieldMetadata' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\FieldMetadata';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\FieldMetadata' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class FieldMetadataNormalizer implements DenormalizerInterface, NormalizerInterf
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\FieldMetadata();
+        $object = new \JiraSdk\Api\Model\FieldMetadata();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -46,7 +59,7 @@ class FieldMetadataNormalizer implements DenormalizerInterface, NormalizerInterf
             $object->setRequired($data['required']);
         }
         if (\array_key_exists('schema', $data)) {
-            $object->setSchema($this->denormalizer->denormalize($data['schema'], 'JiraSdk\\Model\\FieldMetadataSchema', 'json', $context));
+            $object->setSchema($this->denormalizer->denormalize($data['schema'], 'JiraSdk\\Api\\Model\\FieldMetadataSchema', 'json', $context));
         }
         if (\array_key_exists('name', $data)) {
             $object->setName($data['name']);
@@ -61,14 +74,14 @@ class FieldMetadataNormalizer implements DenormalizerInterface, NormalizerInterf
             $object->setHasDefaultValue($data['hasDefaultValue']);
         }
         if (\array_key_exists('operations', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['operations'] as $value) {
                 $values[] = $value;
             }
             $object->setOperations($values);
         }
         if (\array_key_exists('allowedValues', $data)) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($data['allowedValues'] as $value_1) {
                 $values_1[] = $value_1;
             }
@@ -78,20 +91,21 @@ class FieldMetadataNormalizer implements DenormalizerInterface, NormalizerInterf
             $object->setDefaultValue($data['defaultValue']);
         }
         if (\array_key_exists('configuration', $data)) {
-            $values_2 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_2 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['configuration'] as $key => $value_2) {
                 $values_2[$key] = $value_2;
             }
             $object->setConfiguration($values_2);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
-        return $data;
+        return [];
     }
 }

@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class BulkPermissionsRequestBeanNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\BulkPermissionsRequestBean';
+        return 'JiraSdk\\Api\\Model\\BulkPermissionsRequestBean' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\BulkPermissionsRequestBean';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\BulkPermissionsRequestBean' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,19 +51,19 @@ class BulkPermissionsRequestBeanNormalizer implements DenormalizerInterface, Nor
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\BulkPermissionsRequestBean();
+        $object = new \JiraSdk\Api\Model\BulkPermissionsRequestBean();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('projectPermissions', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['projectPermissions'] as $value) {
-                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\BulkProjectPermissions', 'json', $context);
+                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\BulkProjectPermissions', 'json', $context);
             }
             $object->setProjectPermissions($values);
         }
         if (\array_key_exists('globalPermissions', $data)) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($data['globalPermissions'] as $value_1) {
                 $values_1[] = $value_1;
             }
@@ -59,23 +72,25 @@ class BulkPermissionsRequestBeanNormalizer implements DenormalizerInterface, Nor
         if (\array_key_exists('accountId', $data)) {
             $object->setAccountId($data['accountId']);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('projectPermissions') && null !== $object->getProjectPermissions()) {
-            $values = array();
+            $values = [];
             foreach ($object->getProjectPermissions() as $value) {
                 $values[] = $this->normalizer->normalize($value, 'json', $context);
             }
             $data['projectPermissions'] = $values;
         }
         if ($object->isInitialized('globalPermissions') && null !== $object->getGlobalPermissions()) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($object->getGlobalPermissions() as $value_1) {
                 $values_1[] = $value_1;
             }
@@ -84,6 +99,7 @@ class BulkPermissionsRequestBeanNormalizer implements DenormalizerInterface, Nor
         if ($object->isInitialized('accountId') && null !== $object->getAccountId()) {
             $data['accountId'] = $object->getAccountId();
         }
+
         return $data;
     }
 }

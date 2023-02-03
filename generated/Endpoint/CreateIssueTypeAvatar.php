@@ -1,106 +1,128 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreateIssueTypeAvatar extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreateIssueTypeAvatar extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Loads an avatar for the issue type.
-
-    Specify the avatar's local file location in the body of the request. Also, include the following headers:
-
-    *  `X-Atlassian-Token: no-check` To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).
-    *  `Content-Type: image/image type` Valid image types are JPEG, GIF, or PNG.
-
-    For example:
-    `curl --request POST \ --user email@example.com:<api_token> \ --header 'X-Atlassian-Token: no-check' \ --header 'Content-Type: image/< image_type>' \ --data-binary "<@/path/to/file/with/your/avatar>" \ --url 'https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}'This`
-
-    The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square's sides is set to the smaller of the height or width of the image.
-
-    The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.
-
-    After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type's displayed avatar.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param string $id The ID of the issue type.
-    * @param mixed $requestBody
-    * @param array $queryParameters {
-    *     @var int $x The X coordinate of the top-left corner of the crop region.
-    *     @var int $y The Y coordinate of the top-left corner of the crop region.
-    *     @var int $size The length of each side of the crop region.
-    * }
-    */
-    public function __construct(string $id, $requestBody, array $queryParameters = array())
+     * Loads an avatar for the issue type.
+     *
+     * Specify the avatar's local file location in the body of the request. Also, include the following headers:
+     *
+     *  `X-Atlassian-Token: no-check` To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).
+     *  `Content-Type: image/image type` Valid image types are JPEG, GIF, or PNG.
+     *
+     * For example:
+     * `curl --request POST \ --user email@example.com:<api_token> \ --header 'X-Atlassian-Token: no-check' \ --header 'Content-Type: image/< image_type>' \ --data-binary "<@/path/to/file/with/your/avatar>" \ --url 'https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}'This`
+     *
+     * The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square's sides is set to the smaller of the height or width of the image.
+     *
+     * The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.
+     *
+     * After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type's displayed avatar.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param string $id              the ID of the issue type
+     * @param mixed  $requestBody
+     * @param array  $queryParameters {
+     *
+     *     @var int $x the X coordinate of the top-left corner of the crop region
+     *     @var int $y the Y coordinate of the top-left corner of the crop region
+     *     @var int $size The length of each side of the crop region.
+     * }
+     */
+    public function __construct(string $id, $requestBody, array $queryParameters = [])
     {
         $this->id = $id;
         $this->body = $requestBody;
         $this->queryParameters = $queryParameters;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/issuetype/{id}/avatar2');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/issuetype/{id}/avatar2');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
         if (isset($this->body)) {
-            return array(array('Content-Type' => array('*/*')), $this->body);
+            return [['Content-Type' => ['*/*']], $this->body];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     protected function getQueryOptionsResolver(): \Symfony\Component\OptionsResolver\OptionsResolver
     {
         $optionsResolver = parent::getQueryOptionsResolver();
-        $optionsResolver->setDefined(array('x', 'y', 'size'));
-        $optionsResolver->setRequired(array('size'));
-        $optionsResolver->setDefaults(array('x' => 0, 'y' => 0));
-        $optionsResolver->addAllowedTypes('x', array('int'));
-        $optionsResolver->addAllowedTypes('y', array('int'));
-        $optionsResolver->addAllowedTypes('size', array('int'));
+        $optionsResolver->setDefined(['x', 'y', 'size']);
+        $optionsResolver->setRequired(['size']);
+        $optionsResolver->setDefaults(['x' => 0, 'y' => 0]);
+        $optionsResolver->addAllowedTypes('x', ['int']);
+        $optionsResolver->addAllowedTypes('y', ['int']);
+        $optionsResolver->addAllowedTypes('size', ['int']);
+
         return $optionsResolver;
     }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreateIssueTypeAvatarBadRequestException
-     * @throws \JiraSdk\Exception\CreateIssueTypeAvatarUnauthorizedException
-     * @throws \JiraSdk\Exception\CreateIssueTypeAvatarForbiddenException
-     * @throws \JiraSdk\Exception\CreateIssueTypeAvatarNotFoundException
+     * @return \JiraSdk\Api\Model\Avatar|null
      *
-     * @return null|\JiraSdk\Model\Avatar
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeAvatarBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeAvatarUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeAvatarForbiddenException
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeAvatarNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (201 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\Avatar', 'json');
+        if ((null === $contentType) === false && (201 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\Avatar', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeAvatarBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeAvatarBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeAvatarUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeAvatarUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeAvatarForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeAvatarForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeAvatarNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeAvatarNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

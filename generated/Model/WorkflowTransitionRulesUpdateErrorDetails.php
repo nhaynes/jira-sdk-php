@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class WorkflowTransitionRulesUpdateErrorDetails
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * Properties that identify a workflow.
      *
@@ -30,28 +37,31 @@ class WorkflowTransitionRulesUpdateErrorDetails
      * @var string[]
      */
     protected $updateErrors;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * Properties that identify a workflow.
-     *
-     * @return WorkflowId
      */
     public function getWorkflowId(): WorkflowId
     {
         return $this->workflowId;
     }
+
     /**
      * Properties that identify a workflow.
-     *
-     * @param WorkflowId $workflowId
-     *
-     * @return self
      */
     public function setWorkflowId(WorkflowId $workflowId): self
     {
         $this->initialized['workflowId'] = true;
         $this->workflowId = $workflowId;
+
         return $this;
     }
+
     /**
      * A list of transition rule update errors, indexed by the transition rule ID. Any transition rule that appears here wasn't updated.
      *
@@ -61,19 +71,20 @@ class WorkflowTransitionRulesUpdateErrorDetails
     {
         return $this->ruleUpdateErrors;
     }
+
     /**
      * A list of transition rule update errors, indexed by the transition rule ID. Any transition rule that appears here wasn't updated.
      *
      * @param string[][] $ruleUpdateErrors
-     *
-     * @return self
      */
     public function setRuleUpdateErrors(iterable $ruleUpdateErrors): self
     {
         $this->initialized['ruleUpdateErrors'] = true;
         $this->ruleUpdateErrors = $ruleUpdateErrors;
+
         return $this;
     }
+
     /**
      * The list of errors that specify why the workflow update failed. The workflow was not updated if the list contains any entries.
      *
@@ -83,17 +94,17 @@ class WorkflowTransitionRulesUpdateErrorDetails
     {
         return $this->updateErrors;
     }
+
     /**
      * The list of errors that specify why the workflow update failed. The workflow was not updated if the list contains any entries.
      *
      * @param string[] $updateErrors
-     *
-     * @return self
      */
     public function setUpdateErrors(array $updateErrors): self
     {
         $this->initialized['updateErrors'] = true;
         $this->updateErrors = $updateErrors;
+
         return $this;
     }
 }

@@ -1,74 +1,90 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class AddNotifications extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class AddNotifications extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-     * Adds notifications to a notifications scheme. You can add up to 1000 notifications per request.
+     * Adds notifications to a notification scheme. You can add up to 1000 notifications per request.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param string $id The ID of the notification scheme.
-     * @param \JiraSdk\Model\AddNotificationsDetails $requestBody
+     * @param string $id the ID of the notification scheme
      */
-    public function __construct(string $id, \JiraSdk\Model\AddNotificationsDetails $requestBody)
+    public function __construct(string $id, \JiraSdk\Api\Model\AddNotificationsDetails $requestBody)
     {
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/notificationscheme/{id}/notification');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/notificationscheme/{id}/notification');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\AddNotificationsDetails) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\AddNotificationsDetails) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\AddNotificationsBadRequestException
-     * @throws \JiraSdk\Exception\AddNotificationsUnauthorizedException
-     * @throws \JiraSdk\Exception\AddNotificationsForbiddenException
-     * @throws \JiraSdk\Exception\AddNotificationsNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\AddNotificationsBadRequestException
+     * @throws \JiraSdk\Api\Exception\AddNotificationsUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\AddNotificationsForbiddenException
+     * @throws \JiraSdk\Api\Exception\AddNotificationsNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AddNotificationsBadRequestException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AddNotificationsBadRequestException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-        if (is_null($contentType) === false && (401 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AddNotificationsUnauthorizedException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (401 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AddNotificationsUnauthorizedException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AddNotificationsForbiddenException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AddNotificationsForbiddenException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AddNotificationsNotFoundException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AddNotificationsNotFoundException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

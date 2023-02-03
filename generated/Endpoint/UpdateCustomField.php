@@ -1,74 +1,90 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class UpdateCustomField extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class UpdateCustomField extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $fieldId;
+
     /**
      * Updates a custom field.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param string $fieldId The ID of the custom field.
-     * @param \JiraSdk\Model\UpdateCustomFieldDetails $requestBody
+     * @param string $fieldId the ID of the custom field
      */
-    public function __construct(string $fieldId, \JiraSdk\Model\UpdateCustomFieldDetails $requestBody)
+    public function __construct(string $fieldId, \JiraSdk\Api\Model\UpdateCustomFieldDetails $requestBody)
     {
         $this->fieldId = $fieldId;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{fieldId}'), array($this->fieldId), '/rest/api/3/field/{fieldId}');
+        return str_replace(['{fieldId}'], [$this->fieldId], '/rest/api/3/field/{fieldId}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\UpdateCustomFieldDetails) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\UpdateCustomFieldDetails) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\UpdateCustomFieldBadRequestException
-     * @throws \JiraSdk\Exception\UpdateCustomFieldUnauthorizedException
-     * @throws \JiraSdk\Exception\UpdateCustomFieldForbiddenException
-     * @throws \JiraSdk\Exception\UpdateCustomFieldNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldBadRequestException
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldForbiddenException
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldBadRequestException($response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldUnauthorizedException($response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldForbiddenException($response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldForbiddenException($response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldNotFoundException($response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

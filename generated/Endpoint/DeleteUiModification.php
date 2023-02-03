@@ -1,65 +1,81 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class DeleteUiModification extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class DeleteUiModification extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $uiModificationId;
+
     /**
      * Deletes a UI modification. All the contexts that belong to the UI modification are deleted too. UI modification can only be deleted by Forge apps.
      **[Permissions](#permissions) required:** None.
      *
-     * @param string $uiModificationId The ID of the UI modification.
+     * @param string $uiModificationId the ID of the UI modification
      */
     public function __construct(string $uiModificationId)
     {
         $this->uiModificationId = $uiModificationId;
     }
+
     public function getMethod(): string
     {
         return 'DELETE';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{uiModificationId}'), array($this->uiModificationId), '/rest/api/3/uiModifications/{uiModificationId}');
+        return str_replace(['{uiModificationId}'], [$this->uiModificationId], '/rest/api/3/uiModifications/{uiModificationId}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\DeleteUiModificationUnauthorizedException
-     * @throws \JiraSdk\Exception\DeleteUiModificationForbiddenException
-     * @throws \JiraSdk\Exception\DeleteUiModificationNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\DeleteUiModificationUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\DeleteUiModificationForbiddenException
+     * @throws \JiraSdk\Api\Exception\DeleteUiModificationNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\DeleteUiModificationUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\DeleteUiModificationUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\DeleteUiModificationForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\DeleteUiModificationForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\DeleteUiModificationNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\DeleteUiModificationNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\WorkflowSchemeAssociationsWorkflowScheme';
+        return 'JiraSdk\\Api\\Model\\WorkflowSchemeAssociationsWorkflowScheme' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\WorkflowSchemeAssociationsWorkflowScheme';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\WorkflowSchemeAssociationsWorkflowScheme' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\WorkflowSchemeAssociationsWorkflowScheme();
+        $object = new \JiraSdk\Api\Model\WorkflowSchemeAssociationsWorkflowScheme();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -59,7 +72,7 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
             unset($data['defaultWorkflow']);
         }
         if (\array_key_exists('issueTypeMappings', $data)) {
-            $values = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['issueTypeMappings'] as $key => $value) {
                 $values[$key] = $value;
             }
@@ -71,7 +84,7 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
             unset($data['originalDefaultWorkflow']);
         }
         if (\array_key_exists('originalIssueTypeMappings', $data)) {
-            $values_1 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_1 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['originalIssueTypeMappings'] as $key_1 => $value_1) {
                 $values_1[$key_1] = $value_1;
             }
@@ -83,7 +96,7 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
             unset($data['draft']);
         }
         if (\array_key_exists('lastModifiedUser', $data)) {
-            $object->setLastModifiedUser($this->denormalizer->denormalize($data['lastModifiedUser'], 'JiraSdk\\Model\\WorkflowSchemeLastModifiedUser', 'json', $context));
+            $object->setLastModifiedUser($this->denormalizer->denormalize($data['lastModifiedUser'], 'JiraSdk\\Api\\Model\\WorkflowSchemeLastModifiedUser', 'json', $context));
             unset($data['lastModifiedUser']);
         }
         if (\array_key_exists('lastModified', $data)) {
@@ -99,9 +112,9 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
             unset($data['updateDraftIfNeeded']);
         }
         if (\array_key_exists('issueTypes', $data)) {
-            $values_2 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_2 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['issueTypes'] as $key_2 => $value_2) {
-                $values_2[$key_2] = $this->denormalizer->denormalize($value_2, 'JiraSdk\\Model\\IssueTypeDetails', 'json', $context);
+                $values_2[$key_2] = $this->denormalizer->denormalize($value_2, 'JiraSdk\\Api\\Model\\IssueTypeDetails', 'json', $context);
             }
             $object->setIssueTypes($values_2);
             unset($data['issueTypes']);
@@ -111,14 +124,16 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
                 $object[$key_3] = $value_3;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('name') && null !== $object->getName()) {
             $data['name'] = $object->getName();
         }
@@ -129,7 +144,7 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
             $data['defaultWorkflow'] = $object->getDefaultWorkflow();
         }
         if ($object->isInitialized('issueTypeMappings') && null !== $object->getIssueTypeMappings()) {
-            $values = array();
+            $values = [];
             foreach ($object->getIssueTypeMappings() as $key => $value) {
                 $values[$key] = $value;
             }
@@ -143,6 +158,7 @@ class WorkflowSchemeAssociationsWorkflowSchemeNormalizer implements Denormalizer
                 $data[$key_1] = $value_1;
             }
         }
+
         return $data;
     }
 }

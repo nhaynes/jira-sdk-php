@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class JiraExpressionResultMetaNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\JiraExpressionResultMeta';
+        return 'JiraSdk\\Api\\Model\\JiraExpressionResultMeta' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\JiraExpressionResultMeta';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\JiraExpressionResultMeta' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,16 +51,16 @@ class JiraExpressionResultMetaNormalizer implements DenormalizerInterface, Norma
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\JiraExpressionResultMeta();
+        $object = new \JiraSdk\Api\Model\JiraExpressionResultMeta();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('complexity', $data)) {
-            $object->setComplexity($this->denormalizer->denormalize($data['complexity'], 'JiraSdk\\Model\\JiraExpressionEvaluationMetaDataBeanComplexity', 'json', $context));
+            $object->setComplexity($this->denormalizer->denormalize($data['complexity'], 'JiraSdk\\Api\\Model\\JiraExpressionEvaluationMetaDataBeanComplexity', 'json', $context));
             unset($data['complexity']);
         }
         if (\array_key_exists('issues', $data)) {
-            $object->setIssues($this->denormalizer->denormalize($data['issues'], 'JiraSdk\\Model\\JiraExpressionEvaluationMetaDataBeanIssues', 'json', $context));
+            $object->setIssues($this->denormalizer->denormalize($data['issues'], 'JiraSdk\\Api\\Model\\JiraExpressionEvaluationMetaDataBeanIssues', 'json', $context));
             unset($data['issues']);
         }
         foreach ($data as $key => $value) {
@@ -55,14 +68,16 @@ class JiraExpressionResultMetaNormalizer implements DenormalizerInterface, Norma
                 $object[$key] = $value;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('complexity') && null !== $object->getComplexity()) {
             $data['complexity'] = $this->normalizer->normalize($object->getComplexity(), 'json', $context);
         }
@@ -74,6 +89,7 @@ class JiraExpressionResultMetaNormalizer implements DenormalizerInterface, Norma
                 $data[$key] = $value;
             }
         }
+
         return $data;
     }
 }

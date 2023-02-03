@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class ProjectEmailAddress
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The email address.
      *
@@ -24,28 +31,31 @@ class ProjectEmailAddress
      * @var string[]
      */
     protected $emailAddressStatus;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The email address.
-     *
-     * @return string
      */
     public function getEmailAddress(): string
     {
         return $this->emailAddress;
     }
+
     /**
      * The email address.
-     *
-     * @param string $emailAddress
-     *
-     * @return self
      */
     public function setEmailAddress(string $emailAddress): self
     {
         $this->initialized['emailAddress'] = true;
         $this->emailAddress = $emailAddress;
+
         return $this;
     }
+
     /**
      * When using a custom domain, the status of the email address.
      *
@@ -55,17 +65,17 @@ class ProjectEmailAddress
     {
         return $this->emailAddressStatus;
     }
+
     /**
      * When using a custom domain, the status of the email address.
      *
      * @param string[] $emailAddressStatus
-     *
-     * @return self
      */
     public function setEmailAddressStatus(array $emailAddressStatus): self
     {
         $this->initialized['emailAddressStatus'] = true;
         $this->emailAddressStatus = $emailAddressStatus;
+
         return $this;
     }
 }

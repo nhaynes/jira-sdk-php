@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class CompoundClauseNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\CompoundClause';
+        return 'JiraSdk\\Api\\Model\\CompoundClause' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\CompoundClause';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\CompoundClause' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,22 +51,22 @@ class CompoundClauseNormalizer implements DenormalizerInterface, NormalizerInter
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\CompoundClause();
+        $object = new \JiraSdk\Api\Model\CompoundClause();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('clauses', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['clauses'] as $value) {
                 $value_1 = $value;
-                if (is_array($value) and isset($value['clauses']) and (isset($value['operator']) and ($value['operator'] == 'and' or $value['operator'] == 'or' or $value['operator'] == 'not'))) {
-                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\CompoundClause', 'json', $context);
-                } elseif (is_array($value) and isset($value['field']) and (isset($value['operator']) and ($value['operator'] == '=' or $value['operator'] == '!=' or $value['operator'] == '>' or $value['operator'] == '<' or $value['operator'] == '>=' or $value['operator'] == '<=' or $value['operator'] == 'in' or $value['operator'] == 'not in' or $value['operator'] == '~' or $value['operator'] == '~=' or $value['operator'] == 'is' or $value['operator'] == 'is not')) and isset($value['operand'])) {
-                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\FieldValueClause', 'json', $context);
-                } elseif (is_array($value) and isset($value['field']) and (isset($value['operator']) and ($value['operator'] == 'was' or $value['operator'] == 'was in' or $value['operator'] == 'was not in' or $value['operator'] == 'was not')) and isset($value['operand']) and isset($value['predicates'])) {
-                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\FieldWasClause', 'json', $context);
-                } elseif (is_array($value) and isset($value['field']) and (isset($value['operator']) and $value['operator'] == 'changed') and isset($value['predicates'])) {
-                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\FieldChangedClause', 'json', $context);
+                if (\is_array($value) && isset($value['clauses']) && (isset($value['operator']) && ('and' == $value['operator'] || 'or' == $value['operator'] || 'not' == $value['operator']))) {
+                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\CompoundClause', 'json', $context);
+                } elseif (\is_array($value) && isset($value['field']) && (isset($value['operator']) && ('=' == $value['operator'] || '!=' == $value['operator'] || '>' == $value['operator'] || '<' == $value['operator'] || '>=' == $value['operator'] || '<=' == $value['operator'] || 'in' == $value['operator'] || 'not in' == $value['operator'] || '~' == $value['operator'] || '~=' == $value['operator'] || 'is' == $value['operator'] || 'is not' == $value['operator'])) && isset($value['operand'])) {
+                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\FieldValueClause', 'json', $context);
+                } elseif (\is_array($value) && isset($value['field']) && (isset($value['operator']) && ('was' == $value['operator'] || 'was in' == $value['operator'] || 'was not in' == $value['operator'] || 'was not' == $value['operator'])) && isset($value['operand']) && isset($value['predicates'])) {
+                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\FieldWasClause', 'json', $context);
+                } elseif (\is_array($value) && isset($value['field']) && (isset($value['operator']) && 'changed' == $value['operator']) && isset($value['predicates'])) {
+                    $value_1 = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\FieldChangedClause', 'json', $context);
                 }
                 $values[] = $value_1;
             }
@@ -69,24 +82,26 @@ class CompoundClauseNormalizer implements DenormalizerInterface, NormalizerInter
                 $object[$key] = $value_2;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
-        $values = array();
+        $data = [];
+        $values = [];
         foreach ($object->getClauses() as $value) {
             $value_1 = $value;
-            if (is_object($value)) {
+            if (\is_object($value)) {
                 $value_1 = $this->normalizer->normalize($value, 'json', $context);
-            } elseif (is_object($value)) {
+            } elseif (\is_object($value)) {
                 $value_1 = $this->normalizer->normalize($value, 'json', $context);
-            } elseif (is_object($value)) {
+            } elseif (\is_object($value)) {
                 $value_1 = $this->normalizer->normalize($value, 'json', $context);
-            } elseif (is_object($value)) {
+            } elseif (\is_object($value)) {
                 $value_1 = $this->normalizer->normalize($value, 'json', $context);
             }
             $values[] = $value_1;
@@ -98,6 +113,7 @@ class CompoundClauseNormalizer implements DenormalizerInterface, NormalizerInter
                 $data[$key] = $value_2;
             }
         }
+
         return $data;
     }
 }

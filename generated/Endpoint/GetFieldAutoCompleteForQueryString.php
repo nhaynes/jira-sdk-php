@@ -1,87 +1,108 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetFieldAutoCompleteForQueryString extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetFieldAutoCompleteForQueryString extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
+
     /**
-    * Returns the JQL search auto complete suggestions for a field.
-
-    Suggestions can be obtained by providing:
-
-    *  `fieldName` to get a list of all values for the field.
-    *  `fieldName` and `fieldValue` to get a list of values containing the text in `fieldValue`.
-    *  `fieldName` and `predicateName` to get a list of all predicate values for the field.
-    *  `fieldName`, `predicateName`, and `predicateValue` to get a list of predicate values containing the text in `predicateValue`.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:** None.
-    *
-    * @param array $queryParameters {
-    *     @var string $fieldName The name of the field.
-    *     @var string $fieldValue The partial field item name entered by the user.
-    *     @var string $predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*.
-    *     @var string $predicateValue The partial predicate item name entered by the user.
-    * }
-    */
-    public function __construct(array $queryParameters = array())
+     * Returns the JQL search auto complete suggestions for a field.
+     *
+     * Suggestions can be obtained by providing:
+     *
+     *  `fieldName` to get a list of all values for the field.
+     *  `fieldName` and `fieldValue` to get a list of values containing the text in `fieldValue`.
+     *  `fieldName` and `predicateName` to get a list of all predicate values for the field.
+     *  `fieldName`, `predicateName`, and `predicateValue` to get a list of predicate values containing the text in `predicateValue`.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:** None.
+     *
+     * @param array $queryParameters {
+     *
+     *     @var string $fieldName the name of the field
+     *     @var string $fieldValue the partial field item name entered by the user
+     *     @var string $predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*.
+     *     @var string $predicateValue The partial predicate item name entered by the user.
+     * }
+     */
+    public function __construct(array $queryParameters = [])
     {
         $this->queryParameters = $queryParameters;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
         return '/rest/api/3/jql/autocompletedata/suggestions';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     protected function getQueryOptionsResolver(): \Symfony\Component\OptionsResolver\OptionsResolver
     {
         $optionsResolver = parent::getQueryOptionsResolver();
-        $optionsResolver->setDefined(array('fieldName', 'fieldValue', 'predicateName', 'predicateValue'));
-        $optionsResolver->setRequired(array());
-        $optionsResolver->setDefaults(array());
-        $optionsResolver->addAllowedTypes('fieldName', array('string'));
-        $optionsResolver->addAllowedTypes('fieldValue', array('string'));
-        $optionsResolver->addAllowedTypes('predicateName', array('string'));
-        $optionsResolver->addAllowedTypes('predicateValue', array('string'));
+        $optionsResolver->setDefined(['fieldName', 'fieldValue', 'predicateName', 'predicateValue']);
+        $optionsResolver->setRequired([]);
+        $optionsResolver->setDefaults([]);
+        $optionsResolver->addAllowedTypes('fieldName', ['string']);
+        $optionsResolver->addAllowedTypes('fieldValue', ['string']);
+        $optionsResolver->addAllowedTypes('predicateName', ['string']);
+        $optionsResolver->addAllowedTypes('predicateValue', ['string']);
+
         return $optionsResolver;
     }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetFieldAutoCompleteForQueryStringBadRequestException
-     * @throws \JiraSdk\Exception\GetFieldAutoCompleteForQueryStringUnauthorizedException
+     * @return \JiraSdk\Api\Model\AutoCompleteSuggestions|null
      *
-     * @return null|\JiraSdk\Model\AutoCompleteSuggestions
+     * @throws \JiraSdk\Api\Exception\GetFieldAutoCompleteForQueryStringBadRequestException
+     * @throws \JiraSdk\Api\Exception\GetFieldAutoCompleteForQueryStringUnauthorizedException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\AutoCompleteSuggestions', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\AutoCompleteSuggestions', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\GetFieldAutoCompleteForQueryStringBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\GetFieldAutoCompleteForQueryStringBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetFieldAutoCompleteForQueryStringUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetFieldAutoCompleteForQueryStringUnauthorizedException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

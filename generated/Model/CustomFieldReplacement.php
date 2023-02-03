@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class CustomFieldReplacement
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The ID of the custom field in which to replace the version number.
      *
@@ -24,48 +31,47 @@ class CustomFieldReplacement
      * @var int
      */
     protected $moveTo;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The ID of the custom field in which to replace the version number.
-     *
-     * @return int
      */
     public function getCustomFieldId(): int
     {
         return $this->customFieldId;
     }
+
     /**
      * The ID of the custom field in which to replace the version number.
-     *
-     * @param int $customFieldId
-     *
-     * @return self
      */
     public function setCustomFieldId(int $customFieldId): self
     {
         $this->initialized['customFieldId'] = true;
         $this->customFieldId = $customFieldId;
+
         return $this;
     }
+
     /**
      * The version number to use as a replacement for the deleted version.
-     *
-     * @return int
      */
     public function getMoveTo(): int
     {
         return $this->moveTo;
     }
+
     /**
      * The version number to use as a replacement for the deleted version.
-     *
-     * @param int $moveTo
-     *
-     * @return self
      */
     public function setMoveTo(int $moveTo): self
     {
         $this->initialized['moveTo'] = true;
         $this->moveTo = $moveTo;
+
         return $this;
     }
 }

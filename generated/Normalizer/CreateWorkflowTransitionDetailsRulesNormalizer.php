@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class CreateWorkflowTransitionDetailsRulesNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\CreateWorkflowTransitionDetailsRules';
+        return 'JiraSdk\\Api\\Model\\CreateWorkflowTransitionDetailsRules' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\CreateWorkflowTransitionDetailsRules';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\CreateWorkflowTransitionDetailsRules' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,26 +51,26 @@ class CreateWorkflowTransitionDetailsRulesNormalizer implements DenormalizerInte
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\CreateWorkflowTransitionDetailsRules();
+        $object = new \JiraSdk\Api\Model\CreateWorkflowTransitionDetailsRules();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('conditions', $data)) {
-            $object->setConditions($this->denormalizer->denormalize($data['conditions'], 'JiraSdk\\Model\\CreateWorkflowTransitionRulesDetailsConditions', 'json', $context));
+            $object->setConditions($this->denormalizer->denormalize($data['conditions'], 'JiraSdk\\Api\\Model\\CreateWorkflowTransitionRulesDetailsConditions', 'json', $context));
             unset($data['conditions']);
         }
         if (\array_key_exists('validators', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['validators'] as $value) {
-                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\CreateWorkflowTransitionRule', 'json', $context);
+                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\CreateWorkflowTransitionRule', 'json', $context);
             }
             $object->setValidators($values);
             unset($data['validators']);
         }
         if (\array_key_exists('postFunctions', $data)) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($data['postFunctions'] as $value_1) {
-                $values_1[] = $this->denormalizer->denormalize($value_1, 'JiraSdk\\Model\\CreateWorkflowTransitionRule', 'json', $context);
+                $values_1[] = $this->denormalizer->denormalize($value_1, 'JiraSdk\\Api\\Model\\CreateWorkflowTransitionRule', 'json', $context);
             }
             $object->setPostFunctions($values_1);
             unset($data['postFunctions']);
@@ -67,26 +80,28 @@ class CreateWorkflowTransitionDetailsRulesNormalizer implements DenormalizerInte
                 $object[$key] = $value_2;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('conditions') && null !== $object->getConditions()) {
             $data['conditions'] = $this->normalizer->normalize($object->getConditions(), 'json', $context);
         }
         if ($object->isInitialized('validators') && null !== $object->getValidators()) {
-            $values = array();
+            $values = [];
             foreach ($object->getValidators() as $value) {
                 $values[] = $this->normalizer->normalize($value, 'json', $context);
             }
             $data['validators'] = $values;
         }
         if ($object->isInitialized('postFunctions') && null !== $object->getPostFunctions()) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($object->getPostFunctions() as $value_1) {
                 $values_1[] = $this->normalizer->normalize($value_1, 'json', $context);
             }
@@ -97,6 +112,7 @@ class CreateWorkflowTransitionDetailsRulesNormalizer implements DenormalizerInte
                 $data[$key] = $value_2;
             }
         }
+
         return $data;
     }
 }

@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class NotificationSchemeNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\NotificationScheme';
+        return 'JiraSdk\\Api\\Model\\NotificationScheme' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\NotificationScheme';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\NotificationScheme' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class NotificationSchemeNormalizer implements DenormalizerInterface, NormalizerI
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\NotificationScheme();
+        $object = new \JiraSdk\Api\Model\NotificationScheme();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -58,30 +71,32 @@ class NotificationSchemeNormalizer implements DenormalizerInterface, NormalizerI
             $object->setDescription($data['description']);
         }
         if (\array_key_exists('notificationSchemeEvents', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['notificationSchemeEvents'] as $value) {
-                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\NotificationSchemeEvent', 'json', $context);
+                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\NotificationSchemeEvent', 'json', $context);
             }
             $object->setNotificationSchemeEvents($values);
         }
         if (\array_key_exists('scope', $data)) {
-            $object->setScope($this->denormalizer->denormalize($data['scope'], 'JiraSdk\\Model\\NotificationSchemeScope', 'json', $context));
+            $object->setScope($this->denormalizer->denormalize($data['scope'], 'JiraSdk\\Api\\Model\\NotificationSchemeScope', 'json', $context));
         }
         if (\array_key_exists('projects', $data)) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($data['projects'] as $value_1) {
                 $values_1[] = $value_1;
             }
             $object->setProjects($values_1);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('expand') && null !== $object->getExpand()) {
             $data['expand'] = $object->getExpand();
         }
@@ -98,7 +113,7 @@ class NotificationSchemeNormalizer implements DenormalizerInterface, NormalizerI
             $data['description'] = $object->getDescription();
         }
         if ($object->isInitialized('notificationSchemeEvents') && null !== $object->getNotificationSchemeEvents()) {
-            $values = array();
+            $values = [];
             foreach ($object->getNotificationSchemeEvents() as $value) {
                 $values[] = $this->normalizer->normalize($value, 'json', $context);
             }
@@ -108,12 +123,13 @@ class NotificationSchemeNormalizer implements DenormalizerInterface, NormalizerI
             $data['scope'] = $this->normalizer->normalize($object->getScope(), 'json', $context);
         }
         if ($object->isInitialized('projects') && null !== $object->getProjects()) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($object->getProjects() as $value_1) {
                 $values_1[] = $value_1;
             }
             $data['projects'] = $values_1;
         }
+
         return $data;
     }
 }

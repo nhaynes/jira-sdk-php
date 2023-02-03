@@ -1,83 +1,99 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class MoveScreenTabField extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class MoveScreenTabField extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $screenId;
     protected $tabId;
     protected $id;
+
     /**
-    * Moves a screen tab field.
-
-    If `after` and `position` are provided in the request, `position` is ignored.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param int $screenId The ID of the screen.
-    * @param int $tabId The ID of the screen tab.
-    * @param string $id The ID of the field.
-    * @param \JiraSdk\Model\MoveFieldBean $requestBody
-    */
-    public function __construct(int $screenId, int $tabId, string $id, \JiraSdk\Model\MoveFieldBean $requestBody)
+     * Moves a screen tab field.
+     *
+     * If `after` and `position` are provided in the request, `position` is ignored.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param int    $screenId the ID of the screen
+     * @param int    $tabId    the ID of the screen tab
+     * @param string $id       the ID of the field
+     */
+    public function __construct(int $screenId, int $tabId, string $id, \JiraSdk\Api\Model\MoveFieldBean $requestBody)
     {
         $this->screenId = $screenId;
         $this->tabId = $tabId;
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{screenId}', '{tabId}', '{id}'), array($this->screenId, $this->tabId, $this->id), '/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move');
+        return str_replace(['{screenId}', '{tabId}', '{id}'], [$this->screenId, $this->tabId, $this->id], '/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\MoveFieldBean) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\MoveFieldBean) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\MoveScreenTabFieldBadRequestException
-     * @throws \JiraSdk\Exception\MoveScreenTabFieldUnauthorizedException
-     * @throws \JiraSdk\Exception\MoveScreenTabFieldForbiddenException
-     * @throws \JiraSdk\Exception\MoveScreenTabFieldNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\MoveScreenTabFieldBadRequestException
+     * @throws \JiraSdk\Api\Exception\MoveScreenTabFieldUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\MoveScreenTabFieldForbiddenException
+     * @throws \JiraSdk\Api\Exception\MoveScreenTabFieldNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\MoveScreenTabFieldBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\MoveScreenTabFieldBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\MoveScreenTabFieldUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\MoveScreenTabFieldUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\MoveScreenTabFieldForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\MoveScreenTabFieldForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\MoveScreenTabFieldNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\MoveScreenTabFieldNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

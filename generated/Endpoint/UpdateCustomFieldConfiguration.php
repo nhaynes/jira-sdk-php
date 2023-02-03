@@ -1,74 +1,90 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class UpdateCustomFieldConfiguration extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class UpdateCustomFieldConfiguration extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $fieldIdOrKey;
+
     /**
      * Update the configuration for contexts of a custom field created by a [Forge app](https://developer.atlassian.com/platform/forge/).
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). Jira permissions are not required for the Forge app that created the custom field.
      *
-     * @param string $fieldIdOrKey The ID or key of the custom field, for example `customfield_10000`.
-     * @param \JiraSdk\Model\CustomFieldConfigurations $requestBody
+     * @param string $fieldIdOrKey the ID or key of the custom field, for example `customfield_10000`
      */
-    public function __construct(string $fieldIdOrKey, \JiraSdk\Model\CustomFieldConfigurations $requestBody)
+    public function __construct(string $fieldIdOrKey, \JiraSdk\Api\Model\CustomFieldConfigurations $requestBody)
     {
         $this->fieldIdOrKey = $fieldIdOrKey;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{fieldIdOrKey}'), array($this->fieldIdOrKey), '/rest/api/3/app/field/{fieldIdOrKey}/context/configuration');
+        return str_replace(['{fieldIdOrKey}'], [$this->fieldIdOrKey], '/rest/api/3/app/field/{fieldIdOrKey}/context/configuration');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\CustomFieldConfigurations) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\CustomFieldConfigurations) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\UpdateCustomFieldConfigurationBadRequestException
-     * @throws \JiraSdk\Exception\UpdateCustomFieldConfigurationUnauthorizedException
-     * @throws \JiraSdk\Exception\UpdateCustomFieldConfigurationForbiddenException
-     * @throws \JiraSdk\Exception\UpdateCustomFieldConfigurationNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationBadRequestException
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationForbiddenException
+     * @throws \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldConfigurationBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldConfigurationUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldConfigurationForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\UpdateCustomFieldConfigurationNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\UpdateCustomFieldConfigurationNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

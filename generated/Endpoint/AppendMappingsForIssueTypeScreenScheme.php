@@ -1,78 +1,94 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class AppendMappingsForIssueTypeScreenScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class AppendMappingsForIssueTypeScreenScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $issueTypeScreenSchemeId;
+
     /**
      * Appends issue type to screen scheme mappings to an issue type screen scheme.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param string $issueTypeScreenSchemeId The ID of the issue type screen scheme.
-     * @param \JiraSdk\Model\IssueTypeScreenSchemeMappingDetails $requestBody
+     * @param string $issueTypeScreenSchemeId the ID of the issue type screen scheme
      */
-    public function __construct(string $issueTypeScreenSchemeId, \JiraSdk\Model\IssueTypeScreenSchemeMappingDetails $requestBody)
+    public function __construct(string $issueTypeScreenSchemeId, \JiraSdk\Api\Model\IssueTypeScreenSchemeMappingDetails $requestBody)
     {
         $this->issueTypeScreenSchemeId = $issueTypeScreenSchemeId;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{issueTypeScreenSchemeId}'), array($this->issueTypeScreenSchemeId), '/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping');
+        return str_replace(['{issueTypeScreenSchemeId}'], [$this->issueTypeScreenSchemeId], '/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\IssueTypeScreenSchemeMappingDetails) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\IssueTypeScreenSchemeMappingDetails) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeBadRequestException
-     * @throws \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeForbiddenException
-     * @throws \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeNotFoundException
-     * @throws \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeConflictException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeForbiddenException
+     * @throws \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeNotFoundException
+     * @throws \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeConflictException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeBadRequestException($response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeForbiddenException($response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeNotFoundException($response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeNotFoundException($response);
         }
-        if (is_null($contentType) === false && (409 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\AppendMappingsForIssueTypeScreenSchemeConflictException($response);
+        if ((null === $contentType) === false && (409 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\AppendMappingsForIssueTypeScreenSchemeConflictException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

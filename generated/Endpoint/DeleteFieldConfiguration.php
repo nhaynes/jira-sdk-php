@@ -1,72 +1,88 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class DeleteFieldConfiguration extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class DeleteFieldConfiguration extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Deletes a field configuration.
-
-    This operation can only delete configurations used in company-managed (classic) projects.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param int $id The ID of the field configuration.
-    */
+     * Deletes a field configuration.
+     *
+     * This operation can only delete configurations used in company-managed (classic) projects.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param int $id the ID of the field configuration
+     */
     public function __construct(int $id)
     {
         $this->id = $id;
     }
+
     public function getMethod(): string
     {
         return 'DELETE';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/fieldconfiguration/{id}');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/fieldconfiguration/{id}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\DeleteFieldConfigurationBadRequestException
-     * @throws \JiraSdk\Exception\DeleteFieldConfigurationUnauthorizedException
-     * @throws \JiraSdk\Exception\DeleteFieldConfigurationForbiddenException
-     * @throws \JiraSdk\Exception\DeleteFieldConfigurationNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\DeleteFieldConfigurationBadRequestException
+     * @throws \JiraSdk\Api\Exception\DeleteFieldConfigurationUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\DeleteFieldConfigurationForbiddenException
+     * @throws \JiraSdk\Api\Exception\DeleteFieldConfigurationNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\DeleteFieldConfigurationBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\DeleteFieldConfigurationBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\DeleteFieldConfigurationUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\DeleteFieldConfigurationUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\DeleteFieldConfigurationForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\DeleteFieldConfigurationForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\DeleteFieldConfigurationNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\DeleteFieldConfigurationNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

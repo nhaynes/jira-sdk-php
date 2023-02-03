@@ -1,77 +1,95 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class PartialUpdateProjectRole extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class PartialUpdateProjectRole extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Updates either the project role's name or its description.
-
-    You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param int $id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs.
-    * @param \JiraSdk\Model\CreateUpdateRoleRequestBean $requestBody
-    */
-    public function __construct(int $id, \JiraSdk\Model\CreateUpdateRoleRequestBean $requestBody)
+     * Updates either the project role's name or its description.
+     *
+     * You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param int $id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs.
+     */
+    public function __construct(int $id, \JiraSdk\Api\Model\CreateUpdateRoleRequestBean $requestBody)
     {
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/role/{id}');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/role/{id}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\CreateUpdateRoleRequestBean) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\CreateUpdateRoleRequestBean) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\PartialUpdateProjectRoleBadRequestException
-     * @throws \JiraSdk\Exception\PartialUpdateProjectRoleUnauthorizedException
-     * @throws \JiraSdk\Exception\PartialUpdateProjectRoleForbiddenException
-     * @throws \JiraSdk\Exception\PartialUpdateProjectRoleNotFoundException
+     * @return \JiraSdk\Api\Model\ProjectRole|null
      *
-     * @return null|\JiraSdk\Model\ProjectRole
+     * @throws \JiraSdk\Api\Exception\PartialUpdateProjectRoleBadRequestException
+     * @throws \JiraSdk\Api\Exception\PartialUpdateProjectRoleUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\PartialUpdateProjectRoleForbiddenException
+     * @throws \JiraSdk\Api\Exception\PartialUpdateProjectRoleNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\ProjectRole', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ProjectRole', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\PartialUpdateProjectRoleBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\PartialUpdateProjectRoleBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\PartialUpdateProjectRoleUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\PartialUpdateProjectRoleUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\PartialUpdateProjectRoleForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\PartialUpdateProjectRoleForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\PartialUpdateProjectRoleNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\PartialUpdateProjectRoleNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

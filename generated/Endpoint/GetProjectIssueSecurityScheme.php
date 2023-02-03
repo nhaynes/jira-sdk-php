@@ -1,69 +1,87 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetProjectIssueSecurityScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetProjectIssueSecurityScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $projectKeyOrId;
+
     /**
      * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
      *
-     * @param string $projectKeyOrId The project ID or project key (case sensitive).
+     * @param string $projectKeyOrId the project ID or project key (case sensitive)
      */
     public function __construct(string $projectKeyOrId)
     {
         $this->projectKeyOrId = $projectKeyOrId;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{projectKeyOrId}'), array($this->projectKeyOrId), '/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme');
+        return str_replace(['{projectKeyOrId}'], [$this->projectKeyOrId], '/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetProjectIssueSecuritySchemeBadRequestException
-     * @throws \JiraSdk\Exception\GetProjectIssueSecuritySchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\GetProjectIssueSecuritySchemeForbiddenException
-     * @throws \JiraSdk\Exception\GetProjectIssueSecuritySchemeNotFoundException
+     * @return \JiraSdk\Api\Model\SecurityScheme|null
      *
-     * @return null|\JiraSdk\Model\SecurityScheme
+     * @throws \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeForbiddenException
+     * @throws \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\SecurityScheme', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\SecurityScheme', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\GetProjectIssueSecuritySchemeBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetProjectIssueSecuritySchemeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\GetProjectIssueSecuritySchemeForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetProjectIssueSecuritySchemeNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectIssueSecuritySchemeNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

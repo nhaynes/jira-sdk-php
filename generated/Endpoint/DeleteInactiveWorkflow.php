@@ -1,54 +1,74 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class DeleteInactiveWorkflow extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class DeleteInactiveWorkflow extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $entityId;
+
     /**
-    * Deletes a workflow.
-
-    The workflow cannot be deleted if it is:
-
-    *  an active workflow.
-    *  a system workflow.
-    *  associated with any workflow scheme.
-    *  associated with any draft workflow scheme.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param string $entityId The entity ID of the workflow.
-    */
+     * Deletes a workflow.
+     *
+     * The workflow cannot be deleted if it is:
+     *
+     *  an active workflow.
+     *  a system workflow.
+     *  associated with any workflow scheme.
+     *  associated with any draft workflow scheme.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param string $entityId the entity ID of the workflow
+     */
     public function __construct(string $entityId)
     {
         $this->entityId = $entityId;
     }
+
     public function getMethod(): string
     {
         return 'DELETE';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{entityId}'), array($this->entityId), '/rest/api/3/workflow/{entityId}');
+        return str_replace(['{entityId}'], [$this->entityId], '/rest/api/3/workflow/{entityId}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\DeleteInactiveWorkflowBadRequestException
-     * @throws \JiraSdk\Exception\DeleteInactiveWorkflowUnauthorizedException
-     * @throws \JiraSdk\Exception\DeleteInactiveWorkflowForbiddenException
-     * @throws \JiraSdk\Exception\DeleteInactiveWorkflowNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\DeleteInactiveWorkflowBadRequestException
+     * @throws \JiraSdk\Api\Exception\DeleteInactiveWorkflowUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\DeleteInactiveWorkflowForbiddenException
+     * @throws \JiraSdk\Api\Exception\DeleteInactiveWorkflowNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
@@ -57,21 +77,17 @@ class DeleteInactiveWorkflow extends \JiraSdk\Runtime\Client\BaseEndpoint implem
         if (204 === $status) {
             return null;
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DeleteInactiveWorkflowBadRequestException($response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DeleteInactiveWorkflowBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\DeleteInactiveWorkflowUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\DeleteInactiveWorkflowUnauthorizedException($response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DeleteInactiveWorkflowForbiddenException($response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DeleteInactiveWorkflowForbiddenException($response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DeleteInactiveWorkflowNotFoundException($response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DeleteInactiveWorkflowNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

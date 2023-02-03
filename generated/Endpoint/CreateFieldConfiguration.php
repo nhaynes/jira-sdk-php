@@ -1,70 +1,87 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreateFieldConfiguration extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreateFieldConfiguration extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
+
     /**
-    * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.
-
-    This operation can only create configurations for use in company-managed (classic) projects.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param \JiraSdk\Model\FieldConfigurationDetails $requestBody
-    */
-    public function __construct(\JiraSdk\Model\FieldConfigurationDetails $requestBody)
+     * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.
+     *
+     * This operation can only create configurations for use in company-managed (classic) projects.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     */
+    public function __construct(\JiraSdk\Api\Model\FieldConfigurationDetails $requestBody)
     {
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
         return '/rest/api/3/fieldconfiguration';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\FieldConfigurationDetails) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\FieldConfigurationDetails) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreateFieldConfigurationBadRequestException
-     * @throws \JiraSdk\Exception\CreateFieldConfigurationUnauthorizedException
-     * @throws \JiraSdk\Exception\CreateFieldConfigurationForbiddenException
+     * @return \JiraSdk\Api\Model\FieldConfiguration|null
      *
-     * @return null|\JiraSdk\Model\FieldConfiguration
+     * @throws \JiraSdk\Api\Exception\CreateFieldConfigurationBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreateFieldConfigurationUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\CreateFieldConfigurationForbiddenException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\FieldConfiguration', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\FieldConfiguration', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\CreateFieldConfigurationBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\CreateFieldConfigurationBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\CreateFieldConfigurationUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\CreateFieldConfigurationUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\CreateFieldConfigurationForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\CreateFieldConfigurationForbiddenException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class FieldChangedClause extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * A field used in a JQL query. See [Advanced searching - fields reference](https://confluence.atlassian.com/x/dAiiLQ) for more information about fields in JQL queries.
      *
@@ -30,50 +37,50 @@ class FieldChangedClause extends \ArrayObject
      * @var JqlQueryClauseTimePredicate[]
      */
     protected $predicates;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * A field used in a JQL query. See [Advanced searching - fields reference](https://confluence.atlassian.com/x/dAiiLQ) for more information about fields in JQL queries.
-     *
-     * @return JqlQueryField
      */
     public function getField(): JqlQueryField
     {
         return $this->field;
     }
+
     /**
      * A field used in a JQL query. See [Advanced searching - fields reference](https://confluence.atlassian.com/x/dAiiLQ) for more information about fields in JQL queries.
-     *
-     * @param JqlQueryField $field
-     *
-     * @return self
      */
     public function setField(JqlQueryField $field): self
     {
         $this->initialized['field'] = true;
         $this->field = $field;
+
         return $this;
     }
+
     /**
      * The operator applied to the field.
-     *
-     * @return string
      */
     public function getOperator(): string
     {
         return $this->operator;
     }
+
     /**
      * The operator applied to the field.
-     *
-     * @param string $operator
-     *
-     * @return self
      */
     public function setOperator(string $operator): self
     {
         $this->initialized['operator'] = true;
         $this->operator = $operator;
+
         return $this;
     }
+
     /**
      * The list of time predicates.
      *
@@ -83,17 +90,17 @@ class FieldChangedClause extends \ArrayObject
     {
         return $this->predicates;
     }
+
     /**
      * The list of time predicates.
      *
      * @param JqlQueryClauseTimePredicate[] $predicates
-     *
-     * @return self
      */
     public function setPredicates(array $predicates): self
     {
         $this->initialized['predicates'] = true;
         $this->predicates = $predicates;
+
         return $this;
     }
 }

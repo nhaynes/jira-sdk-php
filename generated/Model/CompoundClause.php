@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class CompoundClause extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The list of nested clauses.
      *
@@ -24,6 +31,12 @@ class CompoundClause extends \ArrayObject
      * @var string
      */
     protected $operator;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The list of nested clauses.
      *
@@ -33,39 +46,36 @@ class CompoundClause extends \ArrayObject
     {
         return $this->clauses;
     }
+
     /**
      * The list of nested clauses.
      *
      * @param CompoundClause[]|FieldValueClause[]|FieldWasClause[]|FieldChangedClause[] $clauses
-     *
-     * @return self
      */
     public function setClauses(array $clauses): self
     {
         $this->initialized['clauses'] = true;
         $this->clauses = $clauses;
+
         return $this;
     }
+
     /**
      * The operator between the clauses.
-     *
-     * @return string
      */
     public function getOperator(): string
     {
         return $this->operator;
     }
+
     /**
      * The operator between the clauses.
-     *
-     * @param string $operator
-     *
-     * @return self
      */
     public function setOperator(string $operator): self
     {
         $this->initialized['operator'] = true;
         $this->operator = $operator;
+
         return $this;
     }
 }

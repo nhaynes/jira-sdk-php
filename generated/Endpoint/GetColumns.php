@@ -1,74 +1,92 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetColumns extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetColumns extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Returns the columns configured for a filter. The column configuration is used when the filter's results are viewed in *List View* with the *Columns* set to *Filter*.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:** None, however, column details are only returned for:
-
-    *  filters owned by the user.
-    *  filters shared with a group that the user is a member of.
-    *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.
-    *  filters shared with a public project.
-    *  filters shared with the public.
-    *
-    * @param int $id The ID of the filter.
-    */
+     * Returns the columns configured for a filter. The column configuration is used when the filter's results are viewed in *List View* with the *Columns* set to *Filter*.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:** None, however, column details are only returned for:
+     *
+     *  filters owned by the user.
+     *  filters shared with a group that the user is a member of.
+     *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.
+     *  filters shared with a public project.
+     *  filters shared with the public.
+     *
+     * @param int $id the ID of the filter
+     */
     public function __construct(int $id)
     {
         $this->id = $id;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/filter/{id}/columns');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/filter/{id}/columns');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetColumnsBadRequestException
-     * @throws \JiraSdk\Exception\GetColumnsUnauthorizedException
-     * @throws \JiraSdk\Exception\GetColumnsNotFoundException
+     * @return \JiraSdk\Api\Model\ColumnItem[]|null
      *
-     * @return null|\JiraSdk\Model\ColumnItem[]
+     * @throws \JiraSdk\Api\Exception\GetColumnsBadRequestException
+     * @throws \JiraSdk\Api\Exception\GetColumnsUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetColumnsNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\ColumnItem[]', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ColumnItem[]', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\GetColumnsBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\GetColumnsBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetColumnsUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetColumnsUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetColumnsNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetColumnsNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

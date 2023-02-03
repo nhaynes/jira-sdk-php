@@ -1,48 +1,67 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class DeleteIssueLink extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class DeleteIssueLink extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $linkId;
+
     /**
-    * Deletes an issue link.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:**
-
-    *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.
-    *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.
-    *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-    *
-    * @param string $linkId The ID of the issue link.
-    */
+     * Deletes an issue link.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:**
+     *
+     *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.
+     *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.
+     *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     *
+     * @param string $linkId the ID of the issue link
+     */
     public function __construct(string $linkId)
     {
         $this->linkId = $linkId;
     }
+
     public function getMethod(): string
     {
         return 'DELETE';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{linkId}'), array($this->linkId), '/rest/api/3/issueLink/{linkId}');
+        return str_replace(['{linkId}'], [$this->linkId], '/rest/api/3/issueLink/{linkId}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\DeleteIssueLinkBadRequestException
-     * @throws \JiraSdk\Exception\DeleteIssueLinkUnauthorizedException
-     * @throws \JiraSdk\Exception\DeleteIssueLinkNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\DeleteIssueLinkBadRequestException
+     * @throws \JiraSdk\Api\Exception\DeleteIssueLinkUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\DeleteIssueLinkNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
@@ -55,17 +74,13 @@ class DeleteIssueLink extends \JiraSdk\Runtime\Client\BaseEndpoint implements \J
             return null;
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\DeleteIssueLinkBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\DeleteIssueLinkBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\DeleteIssueLinkUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\DeleteIssueLinkUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\DeleteIssueLinkNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\DeleteIssueLinkNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

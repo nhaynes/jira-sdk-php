@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ParsedJqlQueryStructureNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\ParsedJqlQueryStructure';
+        return 'JiraSdk\\Api\\Model\\ParsedJqlQueryStructure' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\ParsedJqlQueryStructure';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\ParsedJqlQueryStructure' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,26 +51,26 @@ class ParsedJqlQueryStructureNormalizer implements DenormalizerInterface, Normal
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\ParsedJqlQueryStructure();
+        $object = new \JiraSdk\Api\Model\ParsedJqlQueryStructure();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('where', $data)) {
             $value = $data['where'];
-            if (is_array($data['where']) and isset($data['where']['clauses']) and (isset($data['where']['operator']) and ($data['where']['operator'] == 'and' or $data['where']['operator'] == 'or' or $data['where']['operator'] == 'not'))) {
-                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Model\\CompoundClause', 'json', $context);
-            } elseif (is_array($data['where']) and isset($data['where']['field']) and (isset($data['where']['operator']) and ($data['where']['operator'] == '=' or $data['where']['operator'] == '!=' or $data['where']['operator'] == '>' or $data['where']['operator'] == '<' or $data['where']['operator'] == '>=' or $data['where']['operator'] == '<=' or $data['where']['operator'] == 'in' or $data['where']['operator'] == 'not in' or $data['where']['operator'] == '~' or $data['where']['operator'] == '~=' or $data['where']['operator'] == 'is' or $data['where']['operator'] == 'is not')) and isset($data['where']['operand'])) {
-                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Model\\FieldValueClause', 'json', $context);
-            } elseif (is_array($data['where']) and isset($data['where']['field']) and (isset($data['where']['operator']) and ($data['where']['operator'] == 'was' or $data['where']['operator'] == 'was in' or $data['where']['operator'] == 'was not in' or $data['where']['operator'] == 'was not')) and isset($data['where']['operand']) and isset($data['where']['predicates'])) {
-                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Model\\FieldWasClause', 'json', $context);
-            } elseif (is_array($data['where']) and isset($data['where']['field']) and (isset($data['where']['operator']) and $data['where']['operator'] == 'changed') and isset($data['where']['predicates'])) {
-                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Model\\FieldChangedClause', 'json', $context);
+            if (\is_array($data['where']) && isset($data['where']['clauses']) && (isset($data['where']['operator']) && ('and' == $data['where']['operator'] || 'or' == $data['where']['operator'] || 'not' == $data['where']['operator']))) {
+                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Api\\Model\\CompoundClause', 'json', $context);
+            } elseif (\is_array($data['where']) && isset($data['where']['field']) && (isset($data['where']['operator']) && ('=' == $data['where']['operator'] || '!=' == $data['where']['operator'] || '>' == $data['where']['operator'] || '<' == $data['where']['operator'] || '>=' == $data['where']['operator'] || '<=' == $data['where']['operator'] || 'in' == $data['where']['operator'] || 'not in' == $data['where']['operator'] || '~' == $data['where']['operator'] || '~=' == $data['where']['operator'] || 'is' == $data['where']['operator'] || 'is not' == $data['where']['operator'])) && isset($data['where']['operand'])) {
+                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Api\\Model\\FieldValueClause', 'json', $context);
+            } elseif (\is_array($data['where']) && isset($data['where']['field']) && (isset($data['where']['operator']) && ('was' == $data['where']['operator'] || 'was in' == $data['where']['operator'] || 'was not in' == $data['where']['operator'] || 'was not' == $data['where']['operator'])) && isset($data['where']['operand']) && isset($data['where']['predicates'])) {
+                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Api\\Model\\FieldWasClause', 'json', $context);
+            } elseif (\is_array($data['where']) && isset($data['where']['field']) && (isset($data['where']['operator']) && 'changed' == $data['where']['operator']) && isset($data['where']['predicates'])) {
+                $value = $this->denormalizer->denormalize($data['where'], 'JiraSdk\\Api\\Model\\FieldChangedClause', 'json', $context);
             }
             $object->setWhere($value);
             unset($data['where']);
         }
         if (\array_key_exists('orderBy', $data)) {
-            $object->setOrderBy($this->denormalizer->denormalize($data['orderBy'], 'JiraSdk\\Model\\JqlQueryOrderByClause', 'json', $context));
+            $object->setOrderBy($this->denormalizer->denormalize($data['orderBy'], 'JiraSdk\\Api\\Model\\JqlQueryOrderByClause', 'json', $context));
             unset($data['orderBy']);
         }
         foreach ($data as $key => $value_1) {
@@ -65,23 +78,25 @@ class ParsedJqlQueryStructureNormalizer implements DenormalizerInterface, Normal
                 $object[$key] = $value_1;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('where') && null !== $object->getWhere()) {
             $value = $object->getWhere();
-            if (is_object($object->getWhere())) {
+            if (\is_object($object->getWhere())) {
                 $value = $this->normalizer->normalize($object->getWhere(), 'json', $context);
-            } elseif (is_object($object->getWhere())) {
+            } elseif (\is_object($object->getWhere())) {
                 $value = $this->normalizer->normalize($object->getWhere(), 'json', $context);
-            } elseif (is_object($object->getWhere())) {
+            } elseif (\is_object($object->getWhere())) {
                 $value = $this->normalizer->normalize($object->getWhere(), 'json', $context);
-            } elseif (is_object($object->getWhere())) {
+            } elseif (\is_object($object->getWhere())) {
                 $value = $this->normalizer->normalize($object->getWhere(), 'json', $context);
             }
             $data['where'] = $value;
@@ -94,6 +109,7 @@ class ParsedJqlQueryStructureNormalizer implements DenormalizerInterface, Normal
                 $data[$key] = $value_1;
             }
         }
+
         return $data;
     }
 }

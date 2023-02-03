@@ -1,76 +1,94 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreateIssueFieldOption extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreateIssueFieldOption extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $fieldKey;
+
     /**
-    * Creates an option for a select list issue field.
-
-    Note that this operation **only works for issue field select list options added by Connect apps**, it cannot be used with issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). Jira permissions are not required for the app providing the field.
-    *
-    * @param string $fieldKey The field key is specified in the following format: **$(app-key)\_\_$(field-key)**. For example, *example-add-on\_\_example-issue-field*. To determine the `fieldKey` value, do one of the following:
-
-    *  open the app's plugin descriptor, then **app-key** is the key at the top and **field-key** is the key in the `jiraIssueFields` module. **app-key** can also be found in the app listing in the Atlassian Universal Plugin Manager.
-    *  run [Get fields](#api-rest-api-3-field-get) and in the field details the value is returned in `key`. For example, `"key": "teams-add-on__team-issue-field"`
-    * @param \JiraSdk\Model\IssueFieldOptionCreateBean $requestBody
-    */
-    public function __construct(string $fieldKey, \JiraSdk\Model\IssueFieldOptionCreateBean $requestBody)
+     * Creates an option for a select list issue field.
+     *
+     * Note that this operation **only works for issue field select list options added by Connect apps**, it cannot be used with issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). Jira permissions are not required for the app providing the field.
+     *
+     * @param string $fieldKey The field key is specified in the following format: **$(app-key)\_\_$(field-key)**. For example, *example-add-on\_\_example-issue-field*. To determine the `fieldKey` value, do one of the following:
+     *
+     *  open the app's plugin descriptor, then **app-key** is the key at the top and **field-key** is the key in the `jiraIssueFields` module. **app-key** can also be found in the app listing in the Atlassian Universal Plugin Manager.
+     *  run [Get fields](#api-rest-api-3-field-get) and in the field details the value is returned in `key`. For example, `"key": "teams-add-on__team-issue-field"`
+     */
+    public function __construct(string $fieldKey, \JiraSdk\Api\Model\IssueFieldOptionCreateBean $requestBody)
     {
         $this->fieldKey = $fieldKey;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{fieldKey}'), array($this->fieldKey), '/rest/api/3/field/{fieldKey}/option');
+        return str_replace(['{fieldKey}'], [$this->fieldKey], '/rest/api/3/field/{fieldKey}/option');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\IssueFieldOptionCreateBean) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\IssueFieldOptionCreateBean) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreateIssueFieldOptionBadRequestException
-     * @throws \JiraSdk\Exception\CreateIssueFieldOptionForbiddenException
-     * @throws \JiraSdk\Exception\CreateIssueFieldOptionNotFoundException
+     * @return \JiraSdk\Api\Model\IssueFieldOption|null
      *
-     * @return null|\JiraSdk\Model\IssueFieldOption
+     * @throws \JiraSdk\Api\Exception\CreateIssueFieldOptionBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreateIssueFieldOptionForbiddenException
+     * @throws \JiraSdk\Api\Exception\CreateIssueFieldOptionNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\IssueFieldOption', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\IssueFieldOption', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueFieldOptionBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueFieldOptionBadRequestException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueFieldOptionForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueFieldOptionForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueFieldOptionNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueFieldOptionNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

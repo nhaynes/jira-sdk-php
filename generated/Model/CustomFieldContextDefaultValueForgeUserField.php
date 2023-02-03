@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class CustomFieldContextDefaultValueForgeUserField extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The ID of the context.
      *
@@ -31,97 +38,82 @@ class CustomFieldContextDefaultValueForgeUserField extends \ArrayObject
      */
     protected $userFilter;
     /**
-     *
-     *
      * @var string
      */
     protected $type;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The ID of the context.
-     *
-     * @return string
      */
     public function getContextId(): string
     {
         return $this->contextId;
     }
+
     /**
      * The ID of the context.
-     *
-     * @param string $contextId
-     *
-     * @return self
      */
     public function setContextId(string $contextId): self
     {
         $this->initialized['contextId'] = true;
         $this->contextId = $contextId;
+
         return $this;
     }
+
     /**
      * The ID of the default user.
-     *
-     * @return string
      */
     public function getAccountId(): string
     {
         return $this->accountId;
     }
+
     /**
      * The ID of the default user.
-     *
-     * @param string $accountId
-     *
-     * @return self
      */
     public function setAccountId(string $accountId): self
     {
         $this->initialized['accountId'] = true;
         $this->accountId = $accountId;
+
         return $this;
     }
+
     /**
      * Filter for a User Picker (single) custom field.
-     *
-     * @return UserFilter
      */
     public function getUserFilter(): UserFilter
     {
         return $this->userFilter;
     }
+
     /**
      * Filter for a User Picker (single) custom field.
-     *
-     * @param UserFilter $userFilter
-     *
-     * @return self
      */
     public function setUserFilter(UserFilter $userFilter): self
     {
         $this->initialized['userFilter'] = true;
         $this->userFilter = $userFilter;
+
         return $this;
     }
-    /**
-     *
-     *
-     * @return string
-     */
+
     public function getType(): string
     {
         return $this->type;
     }
-    /**
-     *
-     *
-     * @param string $type
-     *
-     * @return self
-     */
+
     public function setType(string $type): self
     {
         $this->initialized['type'] = true;
         $this->type = $type;
+
         return $this;
     }
 }

@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class IssueTypeSchemeDetailsNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\IssueTypeSchemeDetails';
+        return 'JiraSdk\\Api\\Model\\IssueTypeSchemeDetails' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\IssueTypeSchemeDetails';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\IssueTypeSchemeDetails' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class IssueTypeSchemeDetailsNormalizer implements DenormalizerInterface, Normali
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\IssueTypeSchemeDetails();
+        $object = new \JiraSdk\Api\Model\IssueTypeSchemeDetails();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -52,20 +65,22 @@ class IssueTypeSchemeDetailsNormalizer implements DenormalizerInterface, Normali
             $object->setDefaultIssueTypeId($data['defaultIssueTypeId']);
         }
         if (\array_key_exists('issueTypeIds', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['issueTypeIds'] as $value) {
                 $values[] = $value;
             }
             $object->setIssueTypeIds($values);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         $data['name'] = $object->getName();
         if ($object->isInitialized('description') && null !== $object->getDescription()) {
             $data['description'] = $object->getDescription();
@@ -73,11 +88,12 @@ class IssueTypeSchemeDetailsNormalizer implements DenormalizerInterface, Normali
         if ($object->isInitialized('defaultIssueTypeId') && null !== $object->getDefaultIssueTypeId()) {
             $data['defaultIssueTypeId'] = $object->getDefaultIssueTypeId();
         }
-        $values = array();
+        $values = [];
         foreach ($object->getIssueTypeIds() as $value) {
             $values[] = $value;
         }
         $data['issueTypeIds'] = $values;
+
         return $data;
     }
 }

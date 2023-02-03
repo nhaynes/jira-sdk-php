@@ -1,46 +1,65 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class DynamicModulesResourceRegisterModulesPost extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class DynamicModulesResourceRegisterModulesPost extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
+
     /**
      * Registers a list of modules.
      **[Permissions](#permissions) required:** Only Connect apps can make this request.
-     *
-     * @param \JiraSdk\Model\ConnectModules $requestBody
      */
-    public function __construct(\JiraSdk\Model\ConnectModules $requestBody)
+    public function __construct(\JiraSdk\Api\Model\ConnectModules $requestBody)
     {
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
         return '/rest/atlassian-connect/1/app/module/dynamic';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\ConnectModules) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\ConnectModules) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return [];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\DynamicModulesResourceRegisterModulesPostBadRequestException
-     * @throws \JiraSdk\Exception\DynamicModulesResourceRegisterModulesPostUnauthorizedException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\DynamicModulesResourceRegisterModulesPostBadRequestException
+     * @throws \JiraSdk\Api\Exception\DynamicModulesResourceRegisterModulesPostUnauthorizedException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
@@ -49,15 +68,11 @@ class DynamicModulesResourceRegisterModulesPost extends \JiraSdk\Runtime\Client\
         if (200 === $status) {
             return null;
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DynamicModulesResourceRegisterModulesPostBadRequestException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorMessage', 'json'), $response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DynamicModulesResourceRegisterModulesPostBadRequestException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorMessage', 'json'), $response);
         }
-        if (is_null($contentType) === false && (401 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DynamicModulesResourceRegisterModulesPostUnauthorizedException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorMessage', 'json'), $response);
+        if ((null === $contentType) === false && (401 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DynamicModulesResourceRegisterModulesPostUnauthorizedException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorMessage', 'json'), $response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array();
     }
 }

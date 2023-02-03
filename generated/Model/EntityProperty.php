@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class EntityProperty
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The key of the property. Required on create and update.
      *
@@ -24,28 +31,31 @@ class EntityProperty
      * @var mixed
      */
     protected $value;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The key of the property. Required on create and update.
-     *
-     * @return string
      */
     public function getKey(): string
     {
         return $this->key;
     }
+
     /**
      * The key of the property. Required on create and update.
-     *
-     * @param string $key
-     *
-     * @return self
      */
     public function setKey(string $key): self
     {
         $this->initialized['key'] = true;
         $this->key = $key;
+
         return $this;
     }
+
     /**
      * The value of the property. Required on create and update.
      *
@@ -55,17 +65,17 @@ class EntityProperty
     {
         return $this->value;
     }
+
     /**
      * The value of the property. Required on create and update.
      *
      * @param mixed $value
-     *
-     * @return self
      */
     public function setValue($value): self
     {
         $this->initialized['value'] = true;
         $this->value = $value;
+
         return $this;
     }
 }

@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class ParsedJqlQueryStructure extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * A JQL query clause.
      *
@@ -24,6 +31,12 @@ class ParsedJqlQueryStructure extends \ArrayObject
      * @var JqlQueryOrderByClause
      */
     protected $orderBy;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * A JQL query clause.
      *
@@ -33,39 +46,36 @@ class ParsedJqlQueryStructure extends \ArrayObject
     {
         return $this->where;
     }
+
     /**
      * A JQL query clause.
      *
      * @param CompoundClause|FieldValueClause|FieldWasClause|FieldChangedClause $where
-     *
-     * @return self
      */
     public function setWhere($where): self
     {
         $this->initialized['where'] = true;
         $this->where = $where;
+
         return $this;
     }
+
     /**
      * Details of the order-by JQL clause.
-     *
-     * @return JqlQueryOrderByClause
      */
     public function getOrderBy(): JqlQueryOrderByClause
     {
         return $this->orderBy;
     }
+
     /**
      * Details of the order-by JQL clause.
-     *
-     * @param JqlQueryOrderByClause $orderBy
-     *
-     * @return self
      */
     public function setOrderBy(JqlQueryOrderByClause $orderBy): self
     {
         $this->initialized['orderBy'] = true;
         $this->orderBy = $orderBy;
+
         return $this;
     }
 }

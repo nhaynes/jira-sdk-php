@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class ActorsMap
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The user account ID of the user to add.
      *
@@ -30,6 +37,12 @@ class ActorsMap
      * @var string[]
      */
     protected $groupId;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The user account ID of the user to add.
      *
@@ -39,19 +52,20 @@ class ActorsMap
     {
         return $this->user;
     }
+
     /**
      * The user account ID of the user to add.
      *
      * @param string[] $user
-     *
-     * @return self
      */
     public function setUser(array $user): self
     {
         $this->initialized['user'] = true;
         $this->user = $user;
+
         return $this;
     }
+
     /**
      * The name of the group to add. This parameter cannot be used with the `groupId` parameter. As a group's name can change, use of `groupId` is recommended.
      *
@@ -61,19 +75,20 @@ class ActorsMap
     {
         return $this->group;
     }
+
     /**
      * The name of the group to add. This parameter cannot be used with the `groupId` parameter. As a group's name can change, use of `groupId` is recommended.
      *
      * @param string[] $group
-     *
-     * @return self
      */
     public function setGroup(array $group): self
     {
         $this->initialized['group'] = true;
         $this->group = $group;
+
         return $this;
     }
+
     /**
      * The ID of the group to add. This parameter cannot be used with the `group` parameter.
      *
@@ -83,17 +98,17 @@ class ActorsMap
     {
         return $this->groupId;
     }
+
     /**
      * The ID of the group to add. This parameter cannot be used with the `group` parameter.
      *
      * @param string[] $groupId
-     *
-     * @return self
      */
     public function setGroupId(array $groupId): self
     {
         $this->initialized['groupId'] = true;
         $this->groupId = $groupId;
+
         return $this;
     }
 }

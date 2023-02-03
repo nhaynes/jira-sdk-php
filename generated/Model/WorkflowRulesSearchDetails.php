@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class WorkflowRulesSearchDetails extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The workflow ID.
      *
@@ -30,28 +37,31 @@ class WorkflowRulesSearchDetails extends \ArrayObject
      * @var WorkflowTransitionRules[]
      */
     protected $validRules;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The workflow ID.
-     *
-     * @return string
      */
     public function getWorkflowEntityId(): string
     {
         return $this->workflowEntityId;
     }
+
     /**
      * The workflow ID.
-     *
-     * @param string $workflowEntityId
-     *
-     * @return self
      */
     public function setWorkflowEntityId(string $workflowEntityId): self
     {
         $this->initialized['workflowEntityId'] = true;
         $this->workflowEntityId = $workflowEntityId;
+
         return $this;
     }
+
     /**
      * List of workflow rule IDs that do not belong to the workflow or can not be found.
      *
@@ -61,19 +71,20 @@ class WorkflowRulesSearchDetails extends \ArrayObject
     {
         return $this->invalidRules;
     }
+
     /**
      * List of workflow rule IDs that do not belong to the workflow or can not be found.
      *
      * @param string[] $invalidRules
-     *
-     * @return self
      */
     public function setInvalidRules(array $invalidRules): self
     {
         $this->initialized['invalidRules'] = true;
         $this->invalidRules = $invalidRules;
+
         return $this;
     }
+
     /**
      * List of valid workflow transition rules.
      *
@@ -83,17 +94,17 @@ class WorkflowRulesSearchDetails extends \ArrayObject
     {
         return $this->validRules;
     }
+
     /**
      * List of valid workflow transition rules.
      *
      * @param WorkflowTransitionRules[] $validRules
-     *
-     * @return self
      */
     public function setValidRules(array $validRules): self
     {
         $this->initialized['validRules'] = true;
         $this->validRules = $validRules;
+
         return $this;
     }
 }

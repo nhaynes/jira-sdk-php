@@ -1,64 +1,82 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetComponentRelatedIssues extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetComponentRelatedIssues extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Returns the counts of issues assigned to the component.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:** None.
-    *
-    * @param string $id The ID of the component.
-    */
+     * Returns the counts of issues assigned to the component.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:** None.
+     *
+     * @param string $id the ID of the component
+     */
     public function __construct(string $id)
     {
         $this->id = $id;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/component/{id}/relatedIssueCounts');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/component/{id}/relatedIssueCounts');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetComponentRelatedIssuesUnauthorizedException
-     * @throws \JiraSdk\Exception\GetComponentRelatedIssuesNotFoundException
+     * @return \JiraSdk\Api\Model\ComponentIssuesCount|null
      *
-     * @return null|\JiraSdk\Model\ComponentIssuesCount
+     * @throws \JiraSdk\Api\Exception\GetComponentRelatedIssuesUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetComponentRelatedIssuesNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\ComponentIssuesCount', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ComponentIssuesCount', 'json');
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetComponentRelatedIssuesUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetComponentRelatedIssuesUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetComponentRelatedIssuesNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetComponentRelatedIssuesNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

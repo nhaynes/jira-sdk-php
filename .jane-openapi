@@ -1,7 +1,0 @@
-<?php
-
-return [
-    'openapi-file' => 'https://developer.atlassian.com/cloud/jira/platform/swagger-v3.v3.json',
-    'namespace' => 'JiraSdk',
-    'directory' => __DIR__.'/generated',
-];

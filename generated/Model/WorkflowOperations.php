@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class WorkflowOperations
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * Whether the workflow can be updated.
      *
@@ -24,48 +31,47 @@ class WorkflowOperations
      * @var bool
      */
     protected $canDelete;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * Whether the workflow can be updated.
-     *
-     * @return bool
      */
     public function getCanEdit(): bool
     {
         return $this->canEdit;
     }
+
     /**
      * Whether the workflow can be updated.
-     *
-     * @param bool $canEdit
-     *
-     * @return self
      */
     public function setCanEdit(bool $canEdit): self
     {
         $this->initialized['canEdit'] = true;
         $this->canEdit = $canEdit;
+
         return $this;
     }
+
     /**
      * Whether the workflow can be deleted.
-     *
-     * @return bool
      */
     public function getCanDelete(): bool
     {
         return $this->canDelete;
     }
+
     /**
      * Whether the workflow can be deleted.
-     *
-     * @param bool $canDelete
-     *
-     * @return self
      */
     public function setCanDelete(bool $canDelete): self
     {
         $this->initialized['canDelete'] = true;
         $this->canDelete = $canDelete;
+
         return $this;
     }
 }

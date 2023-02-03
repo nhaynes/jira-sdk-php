@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class FieldNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\Field';
+        return 'JiraSdk\\Api\\Model\\Field' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\Field';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\Field' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class FieldNormalizer implements DenormalizerInterface, NormalizerInterface, Den
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\Field();
+        $object = new \JiraSdk\Api\Model\Field();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -49,7 +62,7 @@ class FieldNormalizer implements DenormalizerInterface, NormalizerInterface, Den
             $object->setName($data['name']);
         }
         if (\array_key_exists('schema', $data)) {
-            $object->setSchema($this->denormalizer->denormalize($data['schema'], 'JiraSdk\\Model\\JsonTypeBean', 'json', $context));
+            $object->setSchema($this->denormalizer->denormalize($data['schema'], 'JiraSdk\\Api\\Model\\JsonTypeBean', 'json', $context));
         }
         if (\array_key_exists('description', $data)) {
             $object->setDescription($data['description']);
@@ -76,16 +89,18 @@ class FieldNormalizer implements DenormalizerInterface, NormalizerInterface, Den
             $object->setProjectsCount($data['projectsCount']);
         }
         if (\array_key_exists('lastUsed', $data)) {
-            $object->setLastUsed($this->denormalizer->denormalize($data['lastUsed'], 'JiraSdk\\Model\\FieldLastUsed', 'json', $context));
+            $object->setLastUsed($this->denormalizer->denormalize($data['lastUsed'], 'JiraSdk\\Api\\Model\\FieldLastUsed', 'json', $context));
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         $data['id'] = $object->getId();
         $data['name'] = $object->getName();
         $data['schema'] = $this->normalizer->normalize($object->getSchema(), 'json', $context);
@@ -116,6 +131,7 @@ class FieldNormalizer implements DenormalizerInterface, NormalizerInterface, Den
         if ($object->isInitialized('lastUsed') && null !== $object->getLastUsed()) {
             $data['lastUsed'] = $this->normalizer->normalize($object->getLastUsed(), 'json', $context);
         }
+
         return $data;
     }
 }

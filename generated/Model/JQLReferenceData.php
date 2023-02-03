@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class JQLReferenceData
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * List of fields usable in JQL queries.
      *
@@ -30,6 +37,12 @@ class JQLReferenceData
      * @var string[]
      */
     protected $jqlReservedWords;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * List of fields usable in JQL queries.
      *
@@ -39,19 +52,20 @@ class JQLReferenceData
     {
         return $this->visibleFieldNames;
     }
+
     /**
      * List of fields usable in JQL queries.
      *
      * @param FieldReferenceData[] $visibleFieldNames
-     *
-     * @return self
      */
     public function setVisibleFieldNames(array $visibleFieldNames): self
     {
         $this->initialized['visibleFieldNames'] = true;
         $this->visibleFieldNames = $visibleFieldNames;
+
         return $this;
     }
+
     /**
      * List of functions usable in JQL queries.
      *
@@ -61,19 +75,20 @@ class JQLReferenceData
     {
         return $this->visibleFunctionNames;
     }
+
     /**
      * List of functions usable in JQL queries.
      *
      * @param FunctionReferenceData[] $visibleFunctionNames
-     *
-     * @return self
      */
     public function setVisibleFunctionNames(array $visibleFunctionNames): self
     {
         $this->initialized['visibleFunctionNames'] = true;
         $this->visibleFunctionNames = $visibleFunctionNames;
+
         return $this;
     }
+
     /**
      * List of JQL query reserved words.
      *
@@ -83,17 +98,17 @@ class JQLReferenceData
     {
         return $this->jqlReservedWords;
     }
+
     /**
      * List of JQL query reserved words.
      *
      * @param string[] $jqlReservedWords
-     *
-     * @return self
      */
     public function setJqlReservedWords(array $jqlReservedWords): self
     {
         $this->initialized['jqlReservedWords'] = true;
         $this->jqlReservedWords = $jqlReservedWords;
+
         return $this;
     }
 }

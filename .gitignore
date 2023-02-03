@@ -1,11 +1,13 @@
+#Dependencies
 /vendor
 
-###> friendsofphp/php-cs-fixer ###
-/.php-cs-fixer.php
-/.php-cs-fixer.cache
-###< friendsofphp/php-cs-fixer ###
+# Composer
+composer.lock
+composer.phar
 
-###> phpunit/phpunit ###
-/phpunit.xml
+# CS
+.php-cs-fixer.cache
+
+# Tests
+phpunit.xml
 .phpunit.result.cache
-###< phpunit/phpunit ###

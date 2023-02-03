@@ -1,71 +1,88 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreateIssueType extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreateIssueType extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
+
     /**
      * Creates an issue type and adds it to the default issue type scheme.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-     *
-     * @param \JiraSdk\Model\IssueTypeCreateBean $requestBody
      */
-    public function __construct(\JiraSdk\Model\IssueTypeCreateBean $requestBody)
+    public function __construct(\JiraSdk\Api\Model\IssueTypeCreateBean $requestBody)
     {
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
         return '/rest/api/3/issuetype';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\IssueTypeCreateBean) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\IssueTypeCreateBean) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreateIssueTypeBadRequestException
-     * @throws \JiraSdk\Exception\CreateIssueTypeUnauthorizedException
-     * @throws \JiraSdk\Exception\CreateIssueTypeForbiddenException
-     * @throws \JiraSdk\Exception\CreateIssueTypeConflictException
+     * @return \JiraSdk\Api\Model\IssueTypeDetails|null
      *
-     * @return null|\JiraSdk\Model\IssueTypeDetails
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeForbiddenException
+     * @throws \JiraSdk\Api\Exception\CreateIssueTypeConflictException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (201 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\IssueTypeDetails', 'json');
+        if ((null === $contentType) === false && (201 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\IssueTypeDetails', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeForbiddenException($response);
         }
         if (409 === $status) {
-            throw new \JiraSdk\Exception\CreateIssueTypeConflictException($response);
+            throw new \JiraSdk\Api\Exception\CreateIssueTypeConflictException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

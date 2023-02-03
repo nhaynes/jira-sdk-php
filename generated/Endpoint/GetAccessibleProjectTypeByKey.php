@@ -1,61 +1,79 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetAccessibleProjectTypeByKey extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetAccessibleProjectTypeByKey extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $projectTypeKey;
+
     /**
      * Returns a [project type](https://confluence.atlassian.com/x/Var1Nw) if it is accessible to the user.
      **[Permissions](#permissions) required:** Permission to access Jira.
      *
-     * @param string $projectTypeKey The key of the project type.
+     * @param string $projectTypeKey the key of the project type
      */
     public function __construct(string $projectTypeKey)
     {
         $this->projectTypeKey = $projectTypeKey;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{projectTypeKey}'), array($this->projectTypeKey), '/rest/api/3/project/type/{projectTypeKey}/accessible');
+        return str_replace(['{projectTypeKey}'], [$this->projectTypeKey], '/rest/api/3/project/type/{projectTypeKey}/accessible');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetAccessibleProjectTypeByKeyUnauthorizedException
-     * @throws \JiraSdk\Exception\GetAccessibleProjectTypeByKeyNotFoundException
+     * @return \JiraSdk\Api\Model\ProjectType|null
      *
-     * @return null|\JiraSdk\Model\ProjectType
+     * @throws \JiraSdk\Api\Exception\GetAccessibleProjectTypeByKeyUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetAccessibleProjectTypeByKeyNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\ProjectType', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ProjectType', 'json');
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetAccessibleProjectTypeByKeyUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetAccessibleProjectTypeByKeyUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetAccessibleProjectTypeByKeyNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetAccessibleProjectTypeByKeyNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

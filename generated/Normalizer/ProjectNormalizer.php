@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\Project';
+        return 'JiraSdk\\Api\\Model\\Project' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\Project';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\Project' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\Project();
+        $object = new \JiraSdk\Api\Model\Project();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -58,19 +71,19 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setDescription($data['description']);
         }
         if (\array_key_exists('lead', $data)) {
-            $object->setLead($this->denormalizer->denormalize($data['lead'], 'JiraSdk\\Model\\ProjectLead', 'json', $context));
+            $object->setLead($this->denormalizer->denormalize($data['lead'], 'JiraSdk\\Api\\Model\\ProjectLead', 'json', $context));
         }
         if (\array_key_exists('components', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['components'] as $value) {
-                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\ProjectComponent', 'json', $context);
+                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\ProjectComponent', 'json', $context);
             }
             $object->setComponents($values);
         }
         if (\array_key_exists('issueTypes', $data)) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($data['issueTypes'] as $value_1) {
-                $values_1[] = $this->denormalizer->denormalize($value_1, 'JiraSdk\\Model\\IssueTypeDetails', 'json', $context);
+                $values_1[] = $this->denormalizer->denormalize($value_1, 'JiraSdk\\Api\\Model\\IssueTypeDetails', 'json', $context);
             }
             $object->setIssueTypes($values_1);
         }
@@ -84,9 +97,9 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setAssigneeType($data['assigneeType']);
         }
         if (\array_key_exists('versions', $data)) {
-            $values_2 = array();
+            $values_2 = [];
             foreach ($data['versions'] as $value_2) {
-                $values_2[] = $this->denormalizer->denormalize($value_2, 'JiraSdk\\Model\\Version', 'json', $context);
+                $values_2[] = $this->denormalizer->denormalize($value_2, 'JiraSdk\\Api\\Model\\Version', 'json', $context);
             }
             $object->setVersions($values_2);
         }
@@ -94,17 +107,17 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setName($data['name']);
         }
         if (\array_key_exists('roles', $data)) {
-            $values_3 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_3 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['roles'] as $key => $value_3) {
                 $values_3[$key] = $value_3;
             }
             $object->setRoles($values_3);
         }
         if (\array_key_exists('avatarUrls', $data)) {
-            $object->setAvatarUrls($this->denormalizer->denormalize($data['avatarUrls'], 'JiraSdk\\Model\\ProjectAvatarUrls', 'json', $context));
+            $object->setAvatarUrls($this->denormalizer->denormalize($data['avatarUrls'], 'JiraSdk\\Api\\Model\\ProjectAvatarUrls', 'json', $context));
         }
         if (\array_key_exists('projectCategory', $data)) {
-            $object->setProjectCategory($this->denormalizer->denormalize($data['projectCategory'], 'JiraSdk\\Model\\ProjectProjectCategory', 'json', $context));
+            $object->setProjectCategory($this->denormalizer->denormalize($data['projectCategory'], 'JiraSdk\\Api\\Model\\ProjectProjectCategory', 'json', $context));
         }
         if (\array_key_exists('projectTypeKey', $data)) {
             $object->setProjectTypeKey($data['projectTypeKey']);
@@ -122,13 +135,13 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setIsPrivate($data['isPrivate']);
         }
         if (\array_key_exists('issueTypeHierarchy', $data)) {
-            $object->setIssueTypeHierarchy($this->denormalizer->denormalize($data['issueTypeHierarchy'], 'JiraSdk\\Model\\ProjectIssueTypeHierarchy', 'json', $context));
+            $object->setIssueTypeHierarchy($this->denormalizer->denormalize($data['issueTypeHierarchy'], 'JiraSdk\\Api\\Model\\ProjectIssueTypeHierarchy', 'json', $context));
         }
         if (\array_key_exists('permissions', $data)) {
-            $object->setPermissions($this->denormalizer->denormalize($data['permissions'], 'JiraSdk\\Model\\ProjectPermissions', 'json', $context));
+            $object->setPermissions($this->denormalizer->denormalize($data['permissions'], 'JiraSdk\\Api\\Model\\ProjectPermissions', 'json', $context));
         }
         if (\array_key_exists('properties', $data)) {
-            $values_4 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_4 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['properties'] as $key_1 => $value_4) {
                 $values_4[$key_1] = $value_4;
             }
@@ -138,7 +151,7 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setUuid($data['uuid']);
         }
         if (\array_key_exists('insight', $data)) {
-            $object->setInsight($this->denormalizer->denormalize($data['insight'], 'JiraSdk\\Model\\ProjectInsight', 'json', $context));
+            $object->setInsight($this->denormalizer->denormalize($data['insight'], 'JiraSdk\\Api\\Model\\ProjectInsight', 'json', $context));
         }
         if (\array_key_exists('deleted', $data)) {
             $object->setDeleted($data['deleted']);
@@ -150,7 +163,7 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setDeletedDate(\DateTime::createFromFormat('Y-m-d\\TH:i:sP', $data['deletedDate']));
         }
         if (\array_key_exists('deletedBy', $data)) {
-            $object->setDeletedBy($this->denormalizer->denormalize($data['deletedBy'], 'JiraSdk\\Model\\ProjectDeletedBy', 'json', $context));
+            $object->setDeletedBy($this->denormalizer->denormalize($data['deletedBy'], 'JiraSdk\\Api\\Model\\ProjectDeletedBy', 'json', $context));
         }
         if (\array_key_exists('archived', $data)) {
             $object->setArchived($data['archived']);
@@ -159,19 +172,21 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $object->setArchivedDate(\DateTime::createFromFormat('Y-m-d\\TH:i:sP', $data['archivedDate']));
         }
         if (\array_key_exists('archivedBy', $data)) {
-            $object->setArchivedBy($this->denormalizer->denormalize($data['archivedBy'], 'JiraSdk\\Model\\ProjectArchivedBy', 'json', $context));
+            $object->setArchivedBy($this->denormalizer->denormalize($data['archivedBy'], 'JiraSdk\\Api\\Model\\ProjectArchivedBy', 'json', $context));
         }
         if (\array_key_exists('landingPageInfo', $data)) {
-            $object->setLandingPageInfo($this->denormalizer->denormalize($data['landingPageInfo'], 'JiraSdk\\Model\\ProjectLandingPageInfo', 'json', $context));
+            $object->setLandingPageInfo($this->denormalizer->denormalize($data['landingPageInfo'], 'JiraSdk\\Api\\Model\\ProjectLandingPageInfo', 'json', $context));
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('id') && null !== $object->getId()) {
             $data['id'] = $object->getId();
         }
@@ -181,6 +196,7 @@ class ProjectNormalizer implements DenormalizerInterface, NormalizerInterface, D
         if ($object->isInitialized('favourite') && null !== $object->getFavourite()) {
             $data['favourite'] = $object->getFavourite();
         }
+
         return $data;
     }
 }

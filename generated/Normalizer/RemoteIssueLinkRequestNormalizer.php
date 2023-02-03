@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class RemoteIssueLinkRequestNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\RemoteIssueLinkRequest';
+        return 'JiraSdk\\Api\\Model\\RemoteIssueLinkRequest' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\RemoteIssueLinkRequest';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\RemoteIssueLinkRequest' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class RemoteIssueLinkRequestNormalizer implements DenormalizerInterface, Normali
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\RemoteIssueLinkRequest();
+        $object = new \JiraSdk\Api\Model\RemoteIssueLinkRequest();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -47,7 +60,7 @@ class RemoteIssueLinkRequestNormalizer implements DenormalizerInterface, Normali
             unset($data['globalId']);
         }
         if (\array_key_exists('application', $data)) {
-            $object->setApplication($this->denormalizer->denormalize($data['application'], 'JiraSdk\\Model\\RemoteIssueLinkRequestApplication', 'json', $context));
+            $object->setApplication($this->denormalizer->denormalize($data['application'], 'JiraSdk\\Api\\Model\\RemoteIssueLinkRequestApplication', 'json', $context));
             unset($data['application']);
         }
         if (\array_key_exists('relationship', $data)) {
@@ -55,7 +68,7 @@ class RemoteIssueLinkRequestNormalizer implements DenormalizerInterface, Normali
             unset($data['relationship']);
         }
         if (\array_key_exists('object', $data)) {
-            $object->setObject($this->denormalizer->denormalize($data['object'], 'JiraSdk\\Model\\RemoteIssueLinkRequestObject', 'json', $context));
+            $object->setObject($this->denormalizer->denormalize($data['object'], 'JiraSdk\\Api\\Model\\RemoteIssueLinkRequestObject', 'json', $context));
             unset($data['object']);
         }
         foreach ($data as $key => $value) {
@@ -63,14 +76,16 @@ class RemoteIssueLinkRequestNormalizer implements DenormalizerInterface, Normali
                 $object[$key] = $value;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('globalId') && null !== $object->getGlobalId()) {
             $data['globalId'] = $object->getGlobalId();
         }
@@ -86,6 +101,7 @@ class RemoteIssueLinkRequestNormalizer implements DenormalizerInterface, Normali
                 $data[$key] = $value;
             }
         }
+
         return $data;
     }
 }

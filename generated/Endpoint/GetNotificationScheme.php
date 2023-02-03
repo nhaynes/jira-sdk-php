@@ -1,17 +1,30 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetNotificationScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetNotificationScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
      * Returns a [notification scheme](https://confluence.atlassian.com/x/8YdKLg), including the list of events and the recipients who will receive notifications for those events.
      **[Permissions](#permissions) required:** Permission to access Jira, however, the user must have permission to administer at least one project associated with the notification scheme.
      *
-     * @param int $id The ID of the notification scheme. Use [Get notification schemes paginated](#api-rest-api-3-notificationscheme-get) to get a list of notification scheme IDs.
+     * @param int   $id              The ID of the notification scheme. Use [Get notification schemes paginated](#api-rest-api-3-notificationscheme-get) to get a list of notification scheme IDs.
      * @param array $queryParameters {
+     *
      *     @var string $expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:
      *  `all` Returns all expandable information
      *  `field` Returns information about any custom fields assigned to receive an event
@@ -21,64 +34,72 @@ class GetNotificationScheme extends \JiraSdk\Runtime\Client\BaseEndpoint impleme
      *  `user` Returns information about any users assigned to receive an event
      * }
      */
-    public function __construct(int $id, array $queryParameters = array())
+    public function __construct(int $id, array $queryParameters = [])
     {
         $this->id = $id;
         $this->queryParameters = $queryParameters;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/notificationscheme/{id}');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/notificationscheme/{id}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     protected function getQueryOptionsResolver(): \Symfony\Component\OptionsResolver\OptionsResolver
     {
         $optionsResolver = parent::getQueryOptionsResolver();
-        $optionsResolver->setDefined(array('expand'));
-        $optionsResolver->setRequired(array());
-        $optionsResolver->setDefaults(array());
-        $optionsResolver->addAllowedTypes('expand', array('string'));
+        $optionsResolver->setDefined(['expand']);
+        $optionsResolver->setRequired([]);
+        $optionsResolver->setDefaults([]);
+        $optionsResolver->addAllowedTypes('expand', ['string']);
+
         return $optionsResolver;
     }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetNotificationSchemeBadRequestException
-     * @throws \JiraSdk\Exception\GetNotificationSchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\GetNotificationSchemeNotFoundException
+     * @return \JiraSdk\Api\Model\NotificationScheme|null
      *
-     * @return null|\JiraSdk\Model\NotificationScheme
+     * @throws \JiraSdk\Api\Exception\GetNotificationSchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\GetNotificationSchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetNotificationSchemeNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\NotificationScheme', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\NotificationScheme', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\GetNotificationSchemeBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\GetNotificationSchemeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetNotificationSchemeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetNotificationSchemeUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetNotificationSchemeNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetNotificationSchemeNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

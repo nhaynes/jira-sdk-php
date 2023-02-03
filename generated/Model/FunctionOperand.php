@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class FunctionOperand extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The name of the function.
      *
@@ -24,28 +31,31 @@ class FunctionOperand extends \ArrayObject
      * @var string[]
      */
     protected $arguments;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The name of the function.
-     *
-     * @return string
      */
     public function getFunction(): string
     {
         return $this->function;
     }
+
     /**
      * The name of the function.
-     *
-     * @param string $function
-     *
-     * @return self
      */
     public function setFunction(string $function): self
     {
         $this->initialized['function'] = true;
         $this->function = $function;
+
         return $this;
     }
+
     /**
      * The list of function arguments.
      *
@@ -55,17 +65,17 @@ class FunctionOperand extends \ArrayObject
     {
         return $this->arguments;
     }
+
     /**
      * The list of function arguments.
      *
      * @param string[] $arguments
-     *
-     * @return self
      */
     public function setArguments(array $arguments): self
     {
         $this->initialized['arguments'] = true;
         $this->arguments = $arguments;
+
         return $this;
     }
 }

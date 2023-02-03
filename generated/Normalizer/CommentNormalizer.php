@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\Comment';
+        return 'JiraSdk\\Api\\Model\\Comment' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\Comment';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\Comment' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\Comment();
+        $object = new \JiraSdk\Api\Model\Comment();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -51,7 +64,7 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
             unset($data['id']);
         }
         if (\array_key_exists('author', $data)) {
-            $object->setAuthor($this->denormalizer->denormalize($data['author'], 'JiraSdk\\Model\\CommentAuthor', 'json', $context));
+            $object->setAuthor($this->denormalizer->denormalize($data['author'], 'JiraSdk\\Api\\Model\\CommentAuthor', 'json', $context));
             unset($data['author']);
         }
         if (\array_key_exists('body', $data)) {
@@ -63,7 +76,7 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
             unset($data['renderedBody']);
         }
         if (\array_key_exists('updateAuthor', $data)) {
-            $object->setUpdateAuthor($this->denormalizer->denormalize($data['updateAuthor'], 'JiraSdk\\Model\\CommentUpdateAuthor', 'json', $context));
+            $object->setUpdateAuthor($this->denormalizer->denormalize($data['updateAuthor'], 'JiraSdk\\Api\\Model\\CommentUpdateAuthor', 'json', $context));
             unset($data['updateAuthor']);
         }
         if (\array_key_exists('created', $data)) {
@@ -75,7 +88,7 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
             unset($data['updated']);
         }
         if (\array_key_exists('visibility', $data)) {
-            $object->setVisibility($this->denormalizer->denormalize($data['visibility'], 'JiraSdk\\Model\\CommentVisibility', 'json', $context));
+            $object->setVisibility($this->denormalizer->denormalize($data['visibility'], 'JiraSdk\\Api\\Model\\CommentVisibility', 'json', $context));
             unset($data['visibility']);
         }
         if (\array_key_exists('jsdPublic', $data)) {
@@ -87,9 +100,9 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
             unset($data['jsdAuthorCanSeeRequest']);
         }
         if (\array_key_exists('properties', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['properties'] as $value) {
-                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Model\\EntityProperty', 'json', $context);
+                $values[] = $this->denormalizer->denormalize($value, 'JiraSdk\\Api\\Model\\EntityProperty', 'json', $context);
             }
             $object->setProperties($values);
             unset($data['properties']);
@@ -99,14 +112,16 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
                 $object[$key] = $value_1;
             }
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('body') && null !== $object->getBody()) {
             $data['body'] = $object->getBody();
         }
@@ -114,7 +129,7 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
             $data['visibility'] = $this->normalizer->normalize($object->getVisibility(), 'json', $context);
         }
         if ($object->isInitialized('properties') && null !== $object->getProperties()) {
-            $values = array();
+            $values = [];
             foreach ($object->getProperties() as $value) {
                 $values[] = $this->normalizer->normalize($value, 'json', $context);
             }
@@ -125,6 +140,7 @@ class CommentNormalizer implements DenormalizerInterface, NormalizerInterface, D
                 $data[$key] = $value_1;
             }
         }
+
         return $data;
     }
 }

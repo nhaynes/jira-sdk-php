@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\JsonNode';
+        return 'JiraSdk\\Api\\Model\\JsonNode' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\JsonNode';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\JsonNode' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\JsonNode();
+        $object = new \JiraSdk\Api\Model\JsonNode();
         if (\array_key_exists('numberValue', $data) && \is_int($data['numberValue'])) {
             $data['numberValue'] = (float) $data['numberValue'];
         }
@@ -55,7 +68,7 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             return $object;
         }
         if (\array_key_exists('elements', $data)) {
-            $values = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['elements'] as $key => $value) {
                 $values[$key] = $value;
             }
@@ -65,7 +78,7 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             $object->setArray($data['array']);
         }
         if (\array_key_exists('fields', $data)) {
-            $values_1 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_1 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['fields'] as $key_1 => $value_1) {
                 $values_1[$key_1] = $value_1;
             }
@@ -147,7 +160,7 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             $object->setBooleanValue($data['booleanValue']);
         }
         if (\array_key_exists('binaryValue', $data)) {
-            $values_2 = array();
+            $values_2 = [];
             foreach ($data['binaryValue'] as $value_2) {
                 $values_2[] = $value_2;
             }
@@ -172,22 +185,24 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             $object->setValueAsText($data['valueAsText']);
         }
         if (\array_key_exists('fieldNames', $data)) {
-            $values_3 = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values_3 = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['fieldNames'] as $key_2 => $value_3) {
                 $values_3[$key_2] = $value_3;
             }
             $object->setFieldNames($values_3);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('elements') && null !== $object->getElements()) {
-            $values = array();
+            $values = [];
             foreach ($object->getElements() as $key => $value) {
                 $values[$key] = $value;
             }
@@ -197,7 +212,7 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             $data['array'] = $object->getArray();
         }
         if ($object->isInitialized('fields') && null !== $object->getFields()) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($object->getFields() as $key_1 => $value_1) {
                 $values_1[$key_1] = $value_1;
             }
@@ -279,7 +294,7 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             $data['booleanValue'] = $object->getBooleanValue();
         }
         if ($object->isInitialized('binaryValue') && null !== $object->getBinaryValue()) {
-            $values_2 = array();
+            $values_2 = [];
             foreach ($object->getBinaryValue() as $value_2) {
                 $values_2[] = $value_2;
             }
@@ -304,12 +319,13 @@ class JsonNodeNormalizer implements DenormalizerInterface, NormalizerInterface, 
             $data['valueAsText'] = $object->getValueAsText();
         }
         if ($object->isInitialized('fieldNames') && null !== $object->getFieldNames()) {
-            $values_3 = array();
+            $values_3 = [];
             foreach ($object->getFieldNames() as $key_2 => $value_3) {
                 $values_3[$key_2] = $value_3;
             }
             $data['fieldNames'] = $values_3;
         }
+
         return $data;
     }
 }

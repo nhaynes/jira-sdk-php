@@ -1,65 +1,83 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetProjectEmail extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetProjectEmail extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $projectId;
+
     /**
      * Returns the [project's sender email address](https://confluence.atlassian.com/x/dolKLg).
      **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
      *
-     * @param int $projectId The project ID.
+     * @param int $projectId the project ID
      */
     public function __construct(int $projectId)
     {
         $this->projectId = $projectId;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{projectId}'), array($this->projectId), '/rest/api/3/project/{projectId}/email');
+        return str_replace(['{projectId}'], [$this->projectId], '/rest/api/3/project/{projectId}/email');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetProjectEmailUnauthorizedException
-     * @throws \JiraSdk\Exception\GetProjectEmailForbiddenException
-     * @throws \JiraSdk\Exception\GetProjectEmailNotFoundException
+     * @return \JiraSdk\Api\Model\ProjectEmailAddress|null
      *
-     * @return null|\JiraSdk\Model\ProjectEmailAddress
+     * @throws \JiraSdk\Api\Exception\GetProjectEmailUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetProjectEmailForbiddenException
+     * @throws \JiraSdk\Api\Exception\GetProjectEmailNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\ProjectEmailAddress', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ProjectEmailAddress', 'json');
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetProjectEmailUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectEmailUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\GetProjectEmailForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectEmailForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetProjectEmailNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetProjectEmailNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "nhaynes/jira-sdk-php",
     "description": "Jira SDK generated using janephp from the Jira Cloud OpenAPI spec.",
-    "keywords": ["jira", "atlassian", "sdk", "api", "issues", "tickets", "openapi", "janephp"],
+    "keywords": ["jira", "atlassian", "sdk", "api", "jiraapi", "issues", "tickets", "openapi", "client", "janephp"],
     "type": "library",
     "homepage": "https://github.com/nhaynes/jira-sdk-php",
     "license": "MIT",
@@ -11,17 +11,10 @@
             "homepage": "https://github.com/nhaynes"
         }
     ],
-    "require": {
-        "jane-php/open-api-runtime": "^7.4"
-    },
-    "require-dev": {
-        "jane-php/open-api-3": "^7.4",
-        "friendsofphp/php-cs-fixer": "^3.13",
-        "phpunit/phpunit": "^9.5"
-    },
     "autoload": {
         "psr-4": {
-            "JiraSdk\\": "generated/"
+            "JiraSdk\\Api\\": "generated/",
+            "JiraSdk\\": "src/"
         }
     },
     "autoload-dev": {
@@ -29,15 +22,30 @@
             "JiraSdk\\Tests\\": "tests/"
         }
     },
+    "require": {
+        "php": ">=7.4",
+        "jane-php/open-api-runtime": "^7.4",
+        "php-http/discovery": "^1.14",
+        "php-http/client-common": "^2.6",
+        "psr/http-client-implementation": "*",
+        "php-http/message": "^1.13"
+    },
+    "require-dev": {
+        "jane-php/open-api-3": "^7.4",
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "phpunit/phpunit": "^9.5",
+        "symfony/http-client": "^6.2",
+        "nyholm/psr7": "^1.5"
+    },
     "scripts": {
         "cs": [
-            "vendor/bin/php-cs-fixer fix generated"
+            "vendor/bin/php-cs-fixer fix --verbose"
         ],
         "test": [
             "vendor/bin/phpunit"
         ],
         "generate-sdk": [
-            "vendor/bin/jane-openapi generate"
+            "vendor/bin/jane-openapi generate --config-file=.jane-openapi.php"
         ]
     }
 }

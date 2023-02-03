@@ -1,66 +1,81 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class SetLocale extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class SetLocale extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
+
     /**
-    * Deprecated, use [ Update a user profile](https://developer.atlassian.com/cloud/admin/user-management/rest/#api-users-account-id-manage-profile-patch) from the user management REST API instead.
-
-    Sets the locale of the user. The locale must be one supported by the instance of Jira.
-
-    **[Permissions](#permissions) required:** Permission to access Jira.
-    *
-    * @param \JiraSdk\Model\Locale $requestBody
-    */
-    public function __construct(\JiraSdk\Model\Locale $requestBody)
+     * Deprecated, use [ Update a user profile](https://developer.atlassian.com/cloud/admin/user-management/rest/#api-users-account-id-manage-profile-patch) from the user management REST API instead.
+     *
+     * Sets the locale of the user. The locale must be one supported by the instance of Jira.
+     *
+     **[Permissions](#permissions) required:** Permission to access Jira.
+     */
+    public function __construct(\JiraSdk\Api\Model\Locale $requestBody)
     {
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
         return '/rest/api/3/mypreferences/locale';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\Locale) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\Locale) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\SetLocaleBadRequestException
-     * @throws \JiraSdk\Exception\SetLocaleUnauthorizedException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\SetLocaleBadRequestException
+     * @throws \JiraSdk\Api\Exception\SetLocaleUnauthorizedException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\SetLocaleBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\SetLocaleBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\SetLocaleUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\SetLocaleUnauthorizedException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth');
     }
 }

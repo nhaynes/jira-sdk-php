@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class WorkflowTransitionRules
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * Properties that identify a workflow.
      *
@@ -36,28 +43,31 @@ class WorkflowTransitionRules
      * @var ConnectWorkflowTransitionRule[]
      */
     protected $validators;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * Properties that identify a workflow.
-     *
-     * @return WorkflowId
      */
     public function getWorkflowId(): WorkflowId
     {
         return $this->workflowId;
     }
+
     /**
      * Properties that identify a workflow.
-     *
-     * @param WorkflowId $workflowId
-     *
-     * @return self
      */
     public function setWorkflowId(WorkflowId $workflowId): self
     {
         $this->initialized['workflowId'] = true;
         $this->workflowId = $workflowId;
+
         return $this;
     }
+
     /**
      * The list of post functions within the workflow.
      *
@@ -67,19 +77,20 @@ class WorkflowTransitionRules
     {
         return $this->postFunctions;
     }
+
     /**
      * The list of post functions within the workflow.
      *
      * @param ConnectWorkflowTransitionRule[] $postFunctions
-     *
-     * @return self
      */
     public function setPostFunctions(array $postFunctions): self
     {
         $this->initialized['postFunctions'] = true;
         $this->postFunctions = $postFunctions;
+
         return $this;
     }
+
     /**
      * The list of conditions within the workflow.
      *
@@ -89,19 +100,20 @@ class WorkflowTransitionRules
     {
         return $this->conditions;
     }
+
     /**
      * The list of conditions within the workflow.
      *
      * @param ConnectWorkflowTransitionRule[] $conditions
-     *
-     * @return self
      */
     public function setConditions(array $conditions): self
     {
         $this->initialized['conditions'] = true;
         $this->conditions = $conditions;
+
         return $this;
     }
+
     /**
      * The list of validators within the workflow.
      *
@@ -111,17 +123,17 @@ class WorkflowTransitionRules
     {
         return $this->validators;
     }
+
     /**
      * The list of validators within the workflow.
      *
      * @param ConnectWorkflowTransitionRule[] $validators
-     *
-     * @return self
      */
     public function setValidators(array $validators): self
     {
         $this->initialized['validators'] = true;
         $this->validators = $validators;
+
         return $this;
     }
 }

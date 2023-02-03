@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class IssueTypesWorkflowMappingNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\IssueTypesWorkflowMapping';
+        return 'JiraSdk\\Api\\Model\\IssueTypesWorkflowMapping' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\IssueTypesWorkflowMapping';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\IssueTypesWorkflowMapping' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,7 +51,7 @@ class IssueTypesWorkflowMappingNormalizer implements DenormalizerInterface, Norm
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\IssueTypesWorkflowMapping();
+        $object = new \JiraSdk\Api\Model\IssueTypesWorkflowMapping();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
@@ -46,7 +59,7 @@ class IssueTypesWorkflowMappingNormalizer implements DenormalizerInterface, Norm
             $object->setWorkflow($data['workflow']);
         }
         if (\array_key_exists('issueTypes', $data)) {
-            $values = array();
+            $values = [];
             foreach ($data['issueTypes'] as $value) {
                 $values[] = $value;
             }
@@ -58,19 +71,21 @@ class IssueTypesWorkflowMappingNormalizer implements DenormalizerInterface, Norm
         if (\array_key_exists('updateDraftIfNeeded', $data)) {
             $object->setUpdateDraftIfNeeded($data['updateDraftIfNeeded']);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('workflow') && null !== $object->getWorkflow()) {
             $data['workflow'] = $object->getWorkflow();
         }
         if ($object->isInitialized('issueTypes') && null !== $object->getIssueTypes()) {
-            $values = array();
+            $values = [];
             foreach ($object->getIssueTypes() as $value) {
                 $values[] = $value;
             }
@@ -82,6 +97,7 @@ class IssueTypesWorkflowMappingNormalizer implements DenormalizerInterface, Norm
         if ($object->isInitialized('updateDraftIfNeeded') && null !== $object->getUpdateDraftIfNeeded()) {
             $data['updateDraftIfNeeded'] = $object->getUpdateDraftIfNeeded();
         }
+
         return $data;
     }
 }

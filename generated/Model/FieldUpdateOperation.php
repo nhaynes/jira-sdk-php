@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class FieldUpdateOperation
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The value to add to the field.
      *
@@ -42,6 +49,12 @@ class FieldUpdateOperation
      * @var mixed
      */
     protected $copy;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The value to add to the field.
      *
@@ -51,19 +64,20 @@ class FieldUpdateOperation
     {
         return $this->add;
     }
+
     /**
      * The value to add to the field.
      *
      * @param mixed $add
-     *
-     * @return self
      */
     public function setAdd($add): self
     {
         $this->initialized['add'] = true;
         $this->add = $add;
+
         return $this;
     }
+
     /**
      * The value to set in the field.
      *
@@ -73,19 +87,20 @@ class FieldUpdateOperation
     {
         return $this->set;
     }
+
     /**
      * The value to set in the field.
      *
      * @param mixed $set
-     *
-     * @return self
      */
     public function setSet($set): self
     {
         $this->initialized['set'] = true;
         $this->set = $set;
+
         return $this;
     }
+
     /**
      * The value to removed from the field.
      *
@@ -95,19 +110,20 @@ class FieldUpdateOperation
     {
         return $this->remove;
     }
+
     /**
      * The value to removed from the field.
      *
      * @param mixed $remove
-     *
-     * @return self
      */
     public function setRemove($remove): self
     {
         $this->initialized['remove'] = true;
         $this->remove = $remove;
+
         return $this;
     }
+
     /**
      * The value to edit in the field.
      *
@@ -117,19 +133,20 @@ class FieldUpdateOperation
     {
         return $this->edit;
     }
+
     /**
      * The value to edit in the field.
      *
      * @param mixed $edit
-     *
-     * @return self
      */
     public function setEdit($edit): self
     {
         $this->initialized['edit'] = true;
         $this->edit = $edit;
+
         return $this;
     }
+
     /**
      * The field value to copy from another issue.
      *
@@ -139,17 +156,17 @@ class FieldUpdateOperation
     {
         return $this->copy;
     }
+
     /**
      * The field value to copy from another issue.
      *
      * @param mixed $copy
-     *
-     * @return self
      */
     public function setCopy($copy): self
     {
         $this->initialized['copy'] = true;
         $this->copy = $copy;
+
         return $this;
     }
 }

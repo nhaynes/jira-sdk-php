@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class IssueBean
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * Expand options that include additional issue details in the response.
      *
@@ -91,105 +98,95 @@ class IssueBean
      */
     protected $versionedRepresentations;
     /**
-     *
-     *
      * @var IncludedFields
      */
     protected $fieldsToInclude;
     /**
-     *
-     *
      * @var mixed[]
      */
     protected $fields;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * Expand options that include additional issue details in the response.
-     *
-     * @return string
      */
     public function getExpand(): string
     {
         return $this->expand;
     }
+
     /**
      * Expand options that include additional issue details in the response.
-     *
-     * @param string $expand
-     *
-     * @return self
      */
     public function setExpand(string $expand): self
     {
         $this->initialized['expand'] = true;
         $this->expand = $expand;
+
         return $this;
     }
+
     /**
      * The ID of the issue.
-     *
-     * @return string
      */
     public function getId(): string
     {
         return $this->id;
     }
+
     /**
      * The ID of the issue.
-     *
-     * @param string $id
-     *
-     * @return self
      */
     public function setId(string $id): self
     {
         $this->initialized['id'] = true;
         $this->id = $id;
+
         return $this;
     }
+
     /**
      * The URL of the issue details.
-     *
-     * @return string
      */
     public function getSelf(): string
     {
         return $this->self;
     }
+
     /**
      * The URL of the issue details.
-     *
-     * @param string $self
-     *
-     * @return self
      */
     public function setSelf(string $self): self
     {
         $this->initialized['self'] = true;
         $this->self = $self;
+
         return $this;
     }
+
     /**
      * The key of the issue.
-     *
-     * @return string
      */
     public function getKey(): string
     {
         return $this->key;
     }
+
     /**
      * The key of the issue.
-     *
-     * @param string $key
-     *
-     * @return self
      */
     public function setKey(string $key): self
     {
         $this->initialized['key'] = true;
         $this->key = $key;
+
         return $this;
     }
+
     /**
      * The rendered value of each field present on the issue.
      *
@@ -199,19 +196,20 @@ class IssueBean
     {
         return $this->renderedFields;
     }
+
     /**
      * The rendered value of each field present on the issue.
      *
      * @param mixed[] $renderedFields
-     *
-     * @return self
      */
     public function setRenderedFields(iterable $renderedFields): self
     {
         $this->initialized['renderedFields'] = true;
         $this->renderedFields = $renderedFields;
+
         return $this;
     }
+
     /**
      * Details of the issue properties identified in the request.
      *
@@ -221,19 +219,20 @@ class IssueBean
     {
         return $this->properties;
     }
+
     /**
      * Details of the issue properties identified in the request.
      *
      * @param mixed[] $properties
-     *
-     * @return self
      */
     public function setProperties(iterable $properties): self
     {
         $this->initialized['properties'] = true;
         $this->properties = $properties;
+
         return $this;
     }
+
     /**
      * The ID and name of each field present on the issue.
      *
@@ -243,19 +242,20 @@ class IssueBean
     {
         return $this->names;
     }
+
     /**
      * The ID and name of each field present on the issue.
      *
      * @param string[] $names
-     *
-     * @return self
      */
     public function setNames(iterable $names): self
     {
         $this->initialized['names'] = true;
         $this->names = $names;
+
         return $this;
     }
+
     /**
      * The schema describing each field present on the issue.
      *
@@ -265,19 +265,20 @@ class IssueBean
     {
         return $this->schema;
     }
+
     /**
      * The schema describing each field present on the issue.
      *
      * @param JsonTypeBean[] $schema
-     *
-     * @return self
      */
     public function setSchema(iterable $schema): self
     {
         $this->initialized['schema'] = true;
         $this->schema = $schema;
+
         return $this;
     }
+
     /**
      * The transitions that can be performed on the issue.
      *
@@ -287,85 +288,77 @@ class IssueBean
     {
         return $this->transitions;
     }
+
     /**
      * The transitions that can be performed on the issue.
      *
      * @param IssueTransition[] $transitions
-     *
-     * @return self
      */
     public function setTransitions(array $transitions): self
     {
         $this->initialized['transitions'] = true;
         $this->transitions = $transitions;
+
         return $this;
     }
+
     /**
      * The operations that can be performed on the issue.
-     *
-     * @return IssueBeanOperations
      */
     public function getOperations(): IssueBeanOperations
     {
         return $this->operations;
     }
+
     /**
      * The operations that can be performed on the issue.
-     *
-     * @param IssueBeanOperations $operations
-     *
-     * @return self
      */
     public function setOperations(IssueBeanOperations $operations): self
     {
         $this->initialized['operations'] = true;
         $this->operations = $operations;
+
         return $this;
     }
+
     /**
      * The metadata for the fields on the issue that can be amended.
-     *
-     * @return IssueBeanEditmeta
      */
     public function getEditmeta(): IssueBeanEditmeta
     {
         return $this->editmeta;
     }
+
     /**
      * The metadata for the fields on the issue that can be amended.
-     *
-     * @param IssueBeanEditmeta $editmeta
-     *
-     * @return self
      */
     public function setEditmeta(IssueBeanEditmeta $editmeta): self
     {
         $this->initialized['editmeta'] = true;
         $this->editmeta = $editmeta;
+
         return $this;
     }
+
     /**
      * Details of changelogs associated with the issue.
-     *
-     * @return IssueBeanChangelog
      */
     public function getChangelog(): IssueBeanChangelog
     {
         return $this->changelog;
     }
+
     /**
      * Details of changelogs associated with the issue.
-     *
-     * @param IssueBeanChangelog $changelog
-     *
-     * @return self
      */
     public function setChangelog(IssueBeanChangelog $changelog): self
     {
         $this->initialized['changelog'] = true;
         $this->changelog = $changelog;
+
         return $this;
     }
+
     /**
      * The versions of each field on the issue.
      *
@@ -375,61 +368,49 @@ class IssueBean
     {
         return $this->versionedRepresentations;
     }
+
     /**
      * The versions of each field on the issue.
      *
      * @param mixed[][] $versionedRepresentations
-     *
-     * @return self
      */
     public function setVersionedRepresentations(iterable $versionedRepresentations): self
     {
         $this->initialized['versionedRepresentations'] = true;
         $this->versionedRepresentations = $versionedRepresentations;
+
         return $this;
     }
-    /**
-     *
-     *
-     * @return IncludedFields
-     */
+
     public function getFieldsToInclude(): IncludedFields
     {
         return $this->fieldsToInclude;
     }
-    /**
-     *
-     *
-     * @param IncludedFields $fieldsToInclude
-     *
-     * @return self
-     */
+
     public function setFieldsToInclude(IncludedFields $fieldsToInclude): self
     {
         $this->initialized['fieldsToInclude'] = true;
         $this->fieldsToInclude = $fieldsToInclude;
+
         return $this;
     }
+
     /**
-     *
-     *
      * @return mixed[]
      */
     public function getFields(): iterable
     {
         return $this->fields;
     }
+
     /**
-     *
-     *
      * @param mixed[] $fields
-     *
-     * @return self
      */
     public function setFields(iterable $fields): self
     {
         $this->initialized['fields'] = true;
         $this->fields = $fields;
+
         return $this;
     }
 }

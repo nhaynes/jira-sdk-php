@@ -1,23 +1,36 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class StatusUpdateRequest
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The list of statuses that will be updated.
      *
      * @var StatusUpdate[]
      */
     protected $statuses;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The list of statuses that will be updated.
      *
@@ -27,17 +40,17 @@ class StatusUpdateRequest
     {
         return $this->statuses;
     }
+
     /**
      * The list of statuses that will be updated.
      *
      * @param StatusUpdate[] $statuses
-     *
-     * @return self
      */
     public function setStatuses(array $statuses): self
     {
         $this->initialized['statuses'] = true;
         $this->statuses = $statuses;
+
         return $this;
     }
 }

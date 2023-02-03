@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class FoundUsersAndGroupsNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\FoundUsersAndGroups';
+        return 'JiraSdk\\Api\\Model\\FoundUsersAndGroups' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\FoundUsersAndGroups';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\FoundUsersAndGroups' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,30 +51,33 @@ class FoundUsersAndGroupsNormalizer implements DenormalizerInterface, Normalizer
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\FoundUsersAndGroups();
+        $object = new \JiraSdk\Api\Model\FoundUsersAndGroups();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('users', $data)) {
-            $object->setUsers($this->denormalizer->denormalize($data['users'], 'JiraSdk\\Model\\FoundUsers', 'json', $context));
+            $object->setUsers($this->denormalizer->denormalize($data['users'], 'JiraSdk\\Api\\Model\\FoundUsers', 'json', $context));
         }
         if (\array_key_exists('groups', $data)) {
-            $object->setGroups($this->denormalizer->denormalize($data['groups'], 'JiraSdk\\Model\\FoundGroups', 'json', $context));
+            $object->setGroups($this->denormalizer->denormalize($data['groups'], 'JiraSdk\\Api\\Model\\FoundGroups', 'json', $context));
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         if ($object->isInitialized('users') && null !== $object->getUsers()) {
             $data['users'] = $this->normalizer->normalize($object->getUsers(), 'json', $context);
         }
         if ($object->isInitialized('groups') && null !== $object->getGroups()) {
             $data['groups'] = $this->normalizer->normalize($object->getGroups(), 'json', $context);
         }
+
         return $data;
     }
 }

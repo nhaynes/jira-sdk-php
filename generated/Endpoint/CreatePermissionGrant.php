@@ -1,18 +1,30 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreatePermissionGrant extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreatePermissionGrant extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $schemeId;
+
     /**
      * Creates a permission grant in a permission scheme.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param int $schemeId The ID of the permission scheme in which to create a new permission grant.
-     * @param \JiraSdk\Model\PermissionGrant $requestBody
+     * @param int   $schemeId        the ID of the permission scheme in which to create a new permission grant
      * @param array $queryParameters {
+     *
      *     @var string $expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are always included when you specify any value. Expand options include:
      *  `permissions` Returns all permission grants for each permission scheme.
      *  `user` Returns information about the user who is granted the permission.
@@ -22,68 +34,77 @@ class CreatePermissionGrant extends \JiraSdk\Runtime\Client\BaseEndpoint impleme
      *  `all` Returns all expandable information.
      * }
      */
-    public function __construct(int $schemeId, \JiraSdk\Model\PermissionGrant $requestBody, array $queryParameters = array())
+    public function __construct(int $schemeId, \JiraSdk\Api\Model\PermissionGrant $requestBody, array $queryParameters = [])
     {
         $this->schemeId = $schemeId;
         $this->body = $requestBody;
         $this->queryParameters = $queryParameters;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{schemeId}'), array($this->schemeId), '/rest/api/3/permissionscheme/{schemeId}/permission');
+        return str_replace(['{schemeId}'], [$this->schemeId], '/rest/api/3/permissionscheme/{schemeId}/permission');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\PermissionGrant) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\PermissionGrant) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     protected function getQueryOptionsResolver(): \Symfony\Component\OptionsResolver\OptionsResolver
     {
         $optionsResolver = parent::getQueryOptionsResolver();
-        $optionsResolver->setDefined(array('expand'));
-        $optionsResolver->setRequired(array());
-        $optionsResolver->setDefaults(array());
-        $optionsResolver->addAllowedTypes('expand', array('string'));
+        $optionsResolver->setDefined(['expand']);
+        $optionsResolver->setRequired([]);
+        $optionsResolver->setDefaults([]);
+        $optionsResolver->addAllowedTypes('expand', ['string']);
+
         return $optionsResolver;
     }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreatePermissionGrantBadRequestException
-     * @throws \JiraSdk\Exception\CreatePermissionGrantUnauthorizedException
-     * @throws \JiraSdk\Exception\CreatePermissionGrantForbiddenException
+     * @return \JiraSdk\Api\Model\PermissionGrant|null
      *
-     * @return null|\JiraSdk\Model\PermissionGrant
+     * @throws \JiraSdk\Api\Exception\CreatePermissionGrantBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreatePermissionGrantUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\CreatePermissionGrantForbiddenException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (201 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\PermissionGrant', 'json');
+        if ((null === $contentType) === false && (201 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\PermissionGrant', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\CreatePermissionGrantBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\CreatePermissionGrantBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\CreatePermissionGrantUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\CreatePermissionGrantUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\CreatePermissionGrantForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\CreatePermissionGrantForbiddenException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

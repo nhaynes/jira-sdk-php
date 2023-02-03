@@ -1,11 +1,21 @@
 <?php
 
-namespace JiraSdk\Normalizer;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Normalizer;
 
 use Jane\Component\JsonSchemaRuntime\Reference;
-use JiraSdk\Runtime\Normalizer\CheckArray;
-use JiraSdk\Runtime\Normalizer\ValidatorTrait;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use JiraSdk\Api\Runtime\Normalizer\CheckArray;
+use JiraSdk\Api\Runtime\Normalizer\ValidatorTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -15,22 +25,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class WorkflowTransitionRulesUpdateErrorDetailsNormalizer implements DenormalizerInterface, NormalizerInterface, DenormalizerAwareInterface, NormalizerAwareInterface
 {
+    use CheckArray;
     use DenormalizerAwareTrait;
     use NormalizerAwareTrait;
-    use CheckArray;
     use ValidatorTrait;
+
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return $type === 'JiraSdk\\Model\\WorkflowTransitionRulesUpdateErrorDetails';
+        return 'JiraSdk\\Api\\Model\\WorkflowTransitionRulesUpdateErrorDetails' === $type;
     }
+
     public function supportsNormalization($data, $format = null): bool
     {
-        return is_object($data) && get_class($data) === 'JiraSdk\\Model\\WorkflowTransitionRulesUpdateErrorDetails';
+        return \is_object($data) && 'JiraSdk\\Api\\Model\\WorkflowTransitionRulesUpdateErrorDetails' === \get_class($data);
     }
+
     /**
      * @return mixed
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         if (isset($data['$ref'])) {
             return new Reference($data['$ref'], $context['document-origin']);
@@ -38,17 +51,17 @@ class WorkflowTransitionRulesUpdateErrorDetailsNormalizer implements Denormalize
         if (isset($data['$recursiveRef'])) {
             return new Reference($data['$recursiveRef'], $context['document-origin']);
         }
-        $object = new \JiraSdk\Model\WorkflowTransitionRulesUpdateErrorDetails();
+        $object = new \JiraSdk\Api\Model\WorkflowTransitionRulesUpdateErrorDetails();
         if (null === $data || false === \is_array($data)) {
             return $object;
         }
         if (\array_key_exists('workflowId', $data)) {
-            $object->setWorkflowId($this->denormalizer->denormalize($data['workflowId'], 'JiraSdk\\Model\\WorkflowId', 'json', $context));
+            $object->setWorkflowId($this->denormalizer->denormalize($data['workflowId'], 'JiraSdk\\Api\\Model\\WorkflowId', 'json', $context));
         }
         if (\array_key_exists('ruleUpdateErrors', $data)) {
-            $values = new \ArrayObject(array(), \ArrayObject::ARRAY_AS_PROPS);
+            $values = new \ArrayObject([], \ArrayObject::ARRAY_AS_PROPS);
             foreach ($data['ruleUpdateErrors'] as $key => $value) {
-                $values_1 = array();
+                $values_1 = [];
                 foreach ($value as $value_1) {
                     $values_1[] = $value_1;
                 }
@@ -57,35 +70,38 @@ class WorkflowTransitionRulesUpdateErrorDetailsNormalizer implements Denormalize
             $object->setRuleUpdateErrors($values);
         }
         if (\array_key_exists('updateErrors', $data)) {
-            $values_2 = array();
+            $values_2 = [];
             foreach ($data['updateErrors'] as $value_2) {
                 $values_2[] = $value_2;
             }
             $object->setUpdateErrors($values_2);
         }
+
         return $object;
     }
+
     /**
      * @return array|string|int|float|bool|\ArrayObject|null
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
-        $data = array();
+        $data = [];
         $data['workflowId'] = $this->normalizer->normalize($object->getWorkflowId(), 'json', $context);
-        $values = array();
+        $values = [];
         foreach ($object->getRuleUpdateErrors() as $key => $value) {
-            $values_1 = array();
+            $values_1 = [];
             foreach ($value as $value_1) {
                 $values_1[] = $value_1;
             }
             $values[$key] = $values_1;
         }
         $data['ruleUpdateErrors'] = $values;
-        $values_2 = array();
+        $values_2 = [];
         foreach ($object->getUpdateErrors() as $value_2) {
             $values_2[] = $value_2;
         }
         $data['updateErrors'] = $values_2;
+
         return $data;
     }
 }

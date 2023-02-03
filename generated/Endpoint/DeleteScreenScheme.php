@@ -1,49 +1,69 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class DeleteScreenScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class DeleteScreenScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $screenSchemeId;
+
     /**
-    * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.
-
-    Only screens schemes used in classic projects can be deleted.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param string $screenSchemeId The ID of the screen scheme.
-    */
+     * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.
+     *
+     * Only screens schemes used in classic projects can be deleted.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param string $screenSchemeId the ID of the screen scheme
+     */
     public function __construct(string $screenSchemeId)
     {
         $this->screenSchemeId = $screenSchemeId;
     }
+
     public function getMethod(): string
     {
         return 'DELETE';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{screenSchemeId}'), array($this->screenSchemeId), '/rest/api/3/screenscheme/{screenSchemeId}');
+        return str_replace(['{screenSchemeId}'], [$this->screenSchemeId], '/rest/api/3/screenscheme/{screenSchemeId}');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\DeleteScreenSchemeBadRequestException
-     * @throws \JiraSdk\Exception\DeleteScreenSchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\DeleteScreenSchemeForbiddenException
-     * @throws \JiraSdk\Exception\DeleteScreenSchemeNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\DeleteScreenSchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\DeleteScreenSchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\DeleteScreenSchemeForbiddenException
+     * @throws \JiraSdk\Api\Exception\DeleteScreenSchemeNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
@@ -52,21 +72,17 @@ class DeleteScreenScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements
         if (204 === $status) {
             return null;
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DeleteScreenSchemeBadRequestException($response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DeleteScreenSchemeBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\DeleteScreenSchemeUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\DeleteScreenSchemeUnauthorizedException($response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DeleteScreenSchemeForbiddenException($response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DeleteScreenSchemeForbiddenException($response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\DeleteScreenSchemeNotFoundException($response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\DeleteScreenSchemeNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

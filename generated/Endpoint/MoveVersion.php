@@ -1,73 +1,91 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class MoveVersion extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class MoveVersion extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Modifies the version's sequence within the project, which affects the display order of the versions in Jira.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-    *
-    * @param string $id The ID of the version to be moved.
-    * @param \JiraSdk\Model\VersionMoveBean $requestBody
-    */
-    public function __construct(string $id, \JiraSdk\Model\VersionMoveBean $requestBody)
+     * Modifies the version's sequence within the project, which affects the display order of the versions in Jira.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     *
+     * @param string $id the ID of the version to be moved
+     */
+    public function __construct(string $id, \JiraSdk\Api\Model\VersionMoveBean $requestBody)
     {
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/version/{id}/move');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/version/{id}/move');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\VersionMoveBean) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\VersionMoveBean) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\MoveVersionBadRequestException
-     * @throws \JiraSdk\Exception\MoveVersionUnauthorizedException
-     * @throws \JiraSdk\Exception\MoveVersionNotFoundException
+     * @return \JiraSdk\Api\Model\Version|null
      *
-     * @return null|\JiraSdk\Model\Version
+     * @throws \JiraSdk\Api\Exception\MoveVersionBadRequestException
+     * @throws \JiraSdk\Api\Exception\MoveVersionUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\MoveVersionNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\Version', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\Version', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\MoveVersionBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\MoveVersionBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\MoveVersionUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\MoveVersionUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\MoveVersionNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\MoveVersionNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

@@ -1,67 +1,85 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class GetDashboardItemPropertyKeys extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class GetDashboardItemPropertyKeys extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $dashboardId;
     protected $itemId;
+
     /**
-    * Returns the keys of all properties for a dashboard item.
-
-    This operation can be accessed anonymously.
-
-    **[Permissions](#permissions) required:** The user must be the owner of the dashboard or have the dashboard shared with them. Note, users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) are considered owners of the System dashboard. The System dashboard is considered to be shared with all other users, and is accessible to anonymous users when Jira’s anonymous access is permitted.
-    *
-    * @param string $dashboardId The ID of the dashboard.
-    * @param string $itemId The ID of the dashboard item.
-    */
+     * Returns the keys of all properties for a dashboard item.
+     *
+     * This operation can be accessed anonymously.
+     *
+     **[Permissions](#permissions) required:** The user must be the owner of the dashboard or have the dashboard shared with them. Note, users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) are considered owners of the System dashboard. The System dashboard is considered to be shared with all other users, and is accessible to anonymous users when Jira’s anonymous access is permitted.
+     *
+     * @param string $dashboardId the ID of the dashboard
+     * @param string $itemId      the ID of the dashboard item
+     */
     public function __construct(string $dashboardId, string $itemId)
     {
         $this->dashboardId = $dashboardId;
         $this->itemId = $itemId;
     }
+
     public function getMethod(): string
     {
         return 'GET';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{dashboardId}', '{itemId}'), array($this->dashboardId, $this->itemId), '/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties');
+        return str_replace(['{dashboardId}', '{itemId}'], [$this->dashboardId, $this->itemId], '/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\GetDashboardItemPropertyKeysUnauthorizedException
-     * @throws \JiraSdk\Exception\GetDashboardItemPropertyKeysNotFoundException
+     * @return \JiraSdk\Api\Model\PropertyKeys|null
      *
-     * @return null|\JiraSdk\Model\PropertyKeys
+     * @throws \JiraSdk\Api\Exception\GetDashboardItemPropertyKeysUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\GetDashboardItemPropertyKeysNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\PropertyKeys', 'json');
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\PropertyKeys', 'json');
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\GetDashboardItemPropertyKeysUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\GetDashboardItemPropertyKeysUnauthorizedException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\GetDashboardItemPropertyKeysNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\GetDashboardItemPropertyKeysNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

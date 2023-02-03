@@ -1,65 +1,83 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class CreateWorkflowSchemeDraftFromParent extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class CreateWorkflowSchemeDraftFromParent extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
      * Create a draft workflow scheme from an active workflow scheme, by copying the active workflow scheme. Note that an active workflow scheme can only have one draft workflow scheme.
      **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param int $id The ID of the active workflow scheme that the draft is created from.
+     * @param int $id the ID of the active workflow scheme that the draft is created from
      */
     public function __construct(int $id)
     {
         $this->id = $id;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/workflowscheme/{id}/createdraft');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/workflowscheme/{id}/createdraft');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        return array(array(), null);
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\CreateWorkflowSchemeDraftFromParentBadRequestException
-     * @throws \JiraSdk\Exception\CreateWorkflowSchemeDraftFromParentUnauthorizedException
-     * @throws \JiraSdk\Exception\CreateWorkflowSchemeDraftFromParentForbiddenException
+     * @return \JiraSdk\Api\Model\WorkflowScheme|null
      *
-     * @return null|\JiraSdk\Model\WorkflowScheme
+     * @throws \JiraSdk\Api\Exception\CreateWorkflowSchemeDraftFromParentBadRequestException
+     * @throws \JiraSdk\Api\Exception\CreateWorkflowSchemeDraftFromParentUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\CreateWorkflowSchemeDraftFromParentForbiddenException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (201 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'JiraSdk\\Model\\WorkflowScheme', 'json');
+        if ((null === $contentType) === false && (201 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            return $serializer->deserialize($body, 'JiraSdk\\Api\\Model\\WorkflowScheme', 'json');
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\CreateWorkflowSchemeDraftFromParentBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\CreateWorkflowSchemeDraftFromParentBadRequestException($response);
         }
         if (401 === $status) {
-            throw new \JiraSdk\Exception\CreateWorkflowSchemeDraftFromParentUnauthorizedException($response);
+            throw new \JiraSdk\Api\Exception\CreateWorkflowSchemeDraftFromParentUnauthorizedException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\CreateWorkflowSchemeDraftFromParentForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\CreateWorkflowSchemeDraftFromParentForbiddenException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

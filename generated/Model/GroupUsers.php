@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class GroupUsers extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The number of items on the page.
      *
@@ -42,28 +49,31 @@ class GroupUsers extends \ArrayObject
      * @var int
      */
     protected $endIndex;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The number of items on the page.
-     *
-     * @return int
      */
     public function getSize(): int
     {
         return $this->size;
     }
+
     /**
      * The number of items on the page.
-     *
-     * @param int $size
-     *
-     * @return self
      */
     public function setSize(int $size): self
     {
         $this->initialized['size'] = true;
         $this->size = $size;
+
         return $this;
     }
+
     /**
      * The list of items.
      *
@@ -73,83 +83,74 @@ class GroupUsers extends \ArrayObject
     {
         return $this->items;
     }
+
     /**
      * The list of items.
      *
      * @param UserDetails[] $items
-     *
-     * @return self
      */
     public function setItems(array $items): self
     {
         $this->initialized['items'] = true;
         $this->items = $items;
+
         return $this;
     }
+
     /**
      * The maximum number of results that could be on the page.
-     *
-     * @return int
      */
     public function getMaxResults(): int
     {
         return $this->maxResults;
     }
+
     /**
      * The maximum number of results that could be on the page.
-     *
-     * @param int $maxResults
-     *
-     * @return self
      */
     public function setMaxResults(int $maxResults): self
     {
         $this->initialized['maxResults'] = true;
         $this->maxResults = $maxResults;
+
         return $this;
     }
+
     /**
      * The index of the first item returned on the page.
-     *
-     * @return int
      */
     public function getStartIndex(): int
     {
         return $this->startIndex;
     }
+
     /**
      * The index of the first item returned on the page.
-     *
-     * @param int $startIndex
-     *
-     * @return self
      */
     public function setStartIndex(int $startIndex): self
     {
         $this->initialized['startIndex'] = true;
         $this->startIndex = $startIndex;
+
         return $this;
     }
+
     /**
      * The index of the last item returned on the page.
-     *
-     * @return int
      */
     public function getEndIndex(): int
     {
         return $this->endIndex;
     }
+
     /**
      * The index of the last item returned on the page.
-     *
-     * @param int $endIndex
-     *
-     * @return self
      */
     public function setEndIndex(int $endIndex): self
     {
         $this->initialized['endIndex'] = true;
         $this->endIndex = $endIndex;
+
         return $this;
     }
 }

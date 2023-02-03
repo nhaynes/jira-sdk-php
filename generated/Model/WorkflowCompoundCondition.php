@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class WorkflowCompoundCondition extends \ArrayObject
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The compound condition operator.
      *
@@ -25,33 +32,34 @@ class WorkflowCompoundCondition extends \ArrayObject
      */
     protected $conditions;
     /**
-     *
-     *
      * @var string
      */
     protected $nodeType;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The compound condition operator.
-     *
-     * @return string
      */
     public function getOperator(): string
     {
         return $this->operator;
     }
+
     /**
      * The compound condition operator.
-     *
-     * @param string $operator
-     *
-     * @return self
      */
     public function setOperator(string $operator): self
     {
         $this->initialized['operator'] = true;
         $this->operator = $operator;
+
         return $this;
     }
+
     /**
      * The list of workflow conditions.
      *
@@ -61,39 +69,30 @@ class WorkflowCompoundCondition extends \ArrayObject
     {
         return $this->conditions;
     }
+
     /**
      * The list of workflow conditions.
      *
      * @param mixed[] $conditions
-     *
-     * @return self
      */
     public function setConditions(array $conditions): self
     {
         $this->initialized['conditions'] = true;
         $this->conditions = $conditions;
+
         return $this;
     }
-    /**
-     *
-     *
-     * @return string
-     */
+
     public function getNodeType(): string
     {
         return $this->nodeType;
     }
-    /**
-     *
-     *
-     * @param string $nodeType
-     *
-     * @return self
-     */
+
     public function setNodeType(string $nodeType): self
     {
         $this->initialized['nodeType'] = true;
         $this->nodeType = $nodeType;
+
         return $this;
     }
 }

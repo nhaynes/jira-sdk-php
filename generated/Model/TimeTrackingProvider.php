@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class TimeTrackingProvider
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property) : bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The key for the time tracking provider. For example, *JIRA*.
      *
@@ -25,75 +32,71 @@ class TimeTrackingProvider
      */
     protected $name;
     /**
-     * The URL of the configuration page for the time tracking provider app. For example, */example/config/url*. This property is only returned if the `adminPageKey` property is set in the module descriptor of the time tracking provider app.
+     * The URL of the configuration page for the time tracking provider app. For example, *\/example/config/url*. This property is only returned if the `adminPageKey` property is set in the module descriptor of the time tracking provider app.
      *
      * @var string
      */
     protected $url;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The key for the time tracking provider. For example, *JIRA*.
-     *
-     * @return string
      */
-    public function getKey() : string
+    public function getKey(): string
     {
         return $this->key;
     }
+
     /**
      * The key for the time tracking provider. For example, *JIRA*.
-     *
-     * @param string $key
-     *
-     * @return self
      */
-    public function setKey(string $key) : self
+    public function setKey(string $key): self
     {
         $this->initialized['key'] = true;
         $this->key = $key;
+
         return $this;
     }
+
     /**
      * The name of the time tracking provider. For example, *JIRA provided time tracking*.
-     *
-     * @return string
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
+
     /**
      * The name of the time tracking provider. For example, *JIRA provided time tracking*.
-     *
-     * @param string $name
-     *
-     * @return self
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         $this->initialized['name'] = true;
         $this->name = $name;
+
         return $this;
     }
+
     /**
-     * The URL of the configuration page for the time tracking provider app. For example, */example/config/url*. This property is only returned if the `adminPageKey` property is set in the module descriptor of the time tracking provider app.
-     *
-     * @return string
+     * The URL of the configuration page for the time tracking provider app. For example, *\/example/config/url*. This property is only returned if the `adminPageKey` property is set in the module descriptor of the time tracking provider app.
      */
-    public function getUrl() : string
+    public function getUrl(): string
     {
         return $this->url;
     }
+
     /**
-     * The URL of the configuration page for the time tracking provider app. For example, */example/config/url*. This property is only returned if the `adminPageKey` property is set in the module descriptor of the time tracking provider app.
-     *
-     * @param string $url
-     *
-     * @return self
+     * The URL of the configuration page for the time tracking provider app. For example, *\/example/config/url*. This property is only returned if the `adminPageKey` property is set in the module descriptor of the time tracking provider app.
      */
-    public function setUrl(string $url) : self
+    public function setUrl(string $url): self
     {
         $this->initialized['url'] = true;
         $this->url = $url;
+
         return $this;
     }
 }

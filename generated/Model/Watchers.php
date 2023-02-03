@@ -1,17 +1,24 @@
 <?php
 
-namespace JiraSdk\Model;
+declare(strict_types=1);
+
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Model;
 
 class Watchers
 {
     /**
      * @var array
      */
-    protected $initialized = array();
-    public function isInitialized($property): bool
-    {
-        return array_key_exists($property, $this->initialized);
-    }
+    protected $initialized = [];
     /**
      * The URL of these issue watcher details.
      *
@@ -36,72 +43,69 @@ class Watchers
      * @var UserDetails[]
      */
     protected $watchers;
+
+    public function isInitialized($property): bool
+    {
+        return \array_key_exists($property, $this->initialized);
+    }
+
     /**
      * The URL of these issue watcher details.
-     *
-     * @return string
      */
     public function getSelf(): string
     {
         return $this->self;
     }
+
     /**
      * The URL of these issue watcher details.
-     *
-     * @param string $self
-     *
-     * @return self
      */
     public function setSelf(string $self): self
     {
         $this->initialized['self'] = true;
         $this->self = $self;
+
         return $this;
     }
+
     /**
      * Whether the calling user is watching this issue.
-     *
-     * @return bool
      */
     public function getIsWatching(): bool
     {
         return $this->isWatching;
     }
+
     /**
      * Whether the calling user is watching this issue.
-     *
-     * @param bool $isWatching
-     *
-     * @return self
      */
     public function setIsWatching(bool $isWatching): self
     {
         $this->initialized['isWatching'] = true;
         $this->isWatching = $isWatching;
+
         return $this;
     }
+
     /**
      * The number of users watching this issue.
-     *
-     * @return int
      */
     public function getWatchCount(): int
     {
         return $this->watchCount;
     }
+
     /**
      * The number of users watching this issue.
-     *
-     * @param int $watchCount
-     *
-     * @return self
      */
     public function setWatchCount(int $watchCount): self
     {
         $this->initialized['watchCount'] = true;
         $this->watchCount = $watchCount;
+
         return $this;
     }
+
     /**
      * Details of the users watching this issue.
      *
@@ -111,17 +115,17 @@ class Watchers
     {
         return $this->watchers;
     }
+
     /**
      * Details of the users watching this issue.
      *
      * @param UserDetails[] $watchers
-     *
-     * @return self
      */
     public function setWatchers(array $watchers): self
     {
         $this->initialized['watchers'] = true;
         $this->watchers = $watchers;
+
         return $this;
     }
 }

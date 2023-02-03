@@ -1,78 +1,97 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class AppIssueFieldValueUpdateResourceUpdateIssueFieldsPut extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class AppIssueFieldValueUpdateResourceUpdateIssueFieldsPut extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
-    /**
-    * Updates the value of a custom field added by Connect apps on one or more issues.
-    The values of up to 200 custom fields can be updated.
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
 
-    **[Permissions](#permissions) required:** Only Connect apps can make this request.
-    *
-    * @param \JiraSdk\Model\ConnectCustomFieldValues $requestBody
-    * @param array $headerParameters {
-    *     @var string $Atlassian-Transfer-Id The ID of the transfer.
-    * }
-    */
-    public function __construct(\JiraSdk\Model\ConnectCustomFieldValues $requestBody, array $headerParameters = array())
+    /**
+     * Updates the value of a custom field added by Connect apps on one or more issues.
+     * The values of up to 200 custom fields can be updated.
+     *
+     **[Permissions](#permissions) required:** Only Connect apps can make this request.
+     *
+     * @param array $headerParameters {
+     *
+     *     @var string $Atlassian-Transfer-Id The ID of the transfer.
+     * }
+     */
+    public function __construct(\JiraSdk\Api\Model\ConnectCustomFieldValues $requestBody, array $headerParameters = [])
     {
         $this->body = $requestBody;
         $this->headerParameters = $headerParameters;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
         return '/rest/atlassian-connect/1/migration/field';
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\ConnectCustomFieldValues) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\ConnectCustomFieldValues) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return [];
+    }
+
     protected function getHeadersOptionsResolver(): \Symfony\Component\OptionsResolver\OptionsResolver
     {
         $optionsResolver = parent::getHeadersOptionsResolver();
-        $optionsResolver->setDefined(array('Atlassian-Transfer-Id'));
-        $optionsResolver->setRequired(array('Atlassian-Transfer-Id'));
-        $optionsResolver->setDefaults(array());
-        $optionsResolver->addAllowedTypes('Atlassian-Transfer-Id', array('string'));
+        $optionsResolver->setDefined(['Atlassian-Transfer-Id']);
+        $optionsResolver->setRequired(['Atlassian-Transfer-Id']);
+        $optionsResolver->setDefaults([]);
+        $optionsResolver->addAllowedTypes('Atlassian-Transfer-Id', ['string']);
+
         return $optionsResolver;
     }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutBadRequestException
-     * @throws \JiraSdk\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutForbiddenException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutBadRequestException
+     * @throws \JiraSdk\Api\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutForbiddenException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (200 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (200 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutBadRequestException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\AppIssueFieldValueUpdateResourceUpdateIssueFieldsPutForbiddenException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array();
     }
 }

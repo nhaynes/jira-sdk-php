@@ -1,70 +1,86 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class ChangeFilterOwner extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class ChangeFilterOwner extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
      * Changes the owner of the filter.
      **[Permissions](#permissions) required:** Permission to access Jira. However, the user must own the filter or have the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
      *
-     * @param int $id The ID of the filter to update.
-     * @param \JiraSdk\Model\ChangeFilterOwner $requestBody
+     * @param int $id the ID of the filter to update
      */
-    public function __construct(int $id, \JiraSdk\Model\ChangeFilterOwner $requestBody)
+    public function __construct(int $id, \JiraSdk\Api\Model\ChangeFilterOwner $requestBody)
     {
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'PUT';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/filter/{id}/owner');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/filter/{id}/owner');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\ChangeFilterOwner) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\ChangeFilterOwner) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\ChangeFilterOwnerBadRequestException
-     * @throws \JiraSdk\Exception\ChangeFilterOwnerForbiddenException
-     * @throws \JiraSdk\Exception\ChangeFilterOwnerNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\ChangeFilterOwnerBadRequestException
+     * @throws \JiraSdk\Api\Exception\ChangeFilterOwnerForbiddenException
+     * @throws \JiraSdk\Api\Exception\ChangeFilterOwnerNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
         if (400 === $status) {
-            throw new \JiraSdk\Exception\ChangeFilterOwnerBadRequestException($response);
+            throw new \JiraSdk\Api\Exception\ChangeFilterOwnerBadRequestException($response);
         }
         if (403 === $status) {
-            throw new \JiraSdk\Exception\ChangeFilterOwnerForbiddenException($response);
+            throw new \JiraSdk\Api\Exception\ChangeFilterOwnerForbiddenException($response);
         }
         if (404 === $status) {
-            throw new \JiraSdk\Exception\ChangeFilterOwnerNotFoundException($response);
+            throw new \JiraSdk\Api\Exception\ChangeFilterOwnerNotFoundException($response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }

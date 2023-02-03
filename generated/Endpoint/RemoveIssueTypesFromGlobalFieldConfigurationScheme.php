@@ -1,77 +1,93 @@
 <?php
 
-namespace JiraSdk\Endpoint;
+declare(strict_types=1);
 
-class RemoveIssueTypesFromGlobalFieldConfigurationScheme extends \JiraSdk\Runtime\Client\BaseEndpoint implements \JiraSdk\Runtime\Client\Endpoint
+/*
+ * This file is part of the Jira SDK PHP project.
+ *
+ * (c) Nick Haynes (https://github.com/nhaynes)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JiraSdk\Api\Endpoint;
+
+class RemoveIssueTypesFromGlobalFieldConfigurationScheme extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implements \JiraSdk\Api\Runtime\Client\Endpoint
 {
-    use \JiraSdk\Runtime\Client\EndpointTrait;
+    use \JiraSdk\Api\Runtime\Client\EndpointTrait;
     protected $id;
+
     /**
-    * Removes issue types from the field configuration scheme.
-
-    This operation can only modify field configuration schemes used in company-managed (classic) projects.
-
-    **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-    *
-    * @param int $id The ID of the field configuration scheme.
-    * @param \JiraSdk\Model\IssueTypeIdsToRemove $requestBody
-    */
-    public function __construct(int $id, \JiraSdk\Model\IssueTypeIdsToRemove $requestBody)
+     * Removes issue types from the field configuration scheme.
+     *
+     * This operation can only modify field configuration schemes used in company-managed (classic) projects.
+     *
+     **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     *
+     * @param int $id the ID of the field configuration scheme
+     */
+    public function __construct(int $id, \JiraSdk\Api\Model\IssueTypeIdsToRemove $requestBody)
     {
         $this->id = $id;
         $this->body = $requestBody;
     }
+
     public function getMethod(): string
     {
         return 'POST';
     }
+
     public function getUri(): string
     {
-        return str_replace(array('{id}'), array($this->id), '/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete');
+        return str_replace(['{id}'], [$this->id], '/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete');
     }
+
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {
-        if ($this->body instanceof \JiraSdk\Model\IssueTypeIdsToRemove) {
-            return array(array('Content-Type' => array('application/json')), $serializer->serialize($this->body, 'json'));
+        if ($this->body instanceof \JiraSdk\Api\Model\IssueTypeIdsToRemove) {
+            return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
-        return array(array(), null);
+
+        return [[], null];
     }
+
     public function getExtraHeaders(): array
     {
-        return array('Accept' => array('application/json'));
+        return ['Accept' => ['application/json']];
     }
+
+    public function getAuthenticationScopes(): array
+    {
+        return ['basicAuth', 'OAuth2'];
+    }
+
     /**
      * {@inheritdoc}
      *
-     * @throws \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeBadRequestException
-     * @throws \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeUnauthorizedException
-     * @throws \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeForbiddenException
-     * @throws \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeNotFoundException
-     *
-     * @return null
+     * @throws \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeBadRequestException
+     * @throws \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeUnauthorizedException
+     * @throws \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeForbiddenException
+     * @throws \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeNotFoundException
      */
     protected function transformResponseBody(\Psr\Http\Message\ResponseInterface $response, \Symfony\Component\Serializer\SerializerInterface $serializer, ?string $contentType = null)
     {
         $status = $response->getStatusCode();
         $body = (string) $response->getBody();
-        if (is_null($contentType) === false && (204 === $status && mb_strpos($contentType, 'application/json') !== false)) {
+        if ((null === $contentType) === false && (204 === $status && false !== mb_strpos($contentType, 'application/json'))) {
             return json_decode($body);
         }
-        if (is_null($contentType) === false && (400 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeBadRequestException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (400 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeBadRequestException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-        if (is_null($contentType) === false && (401 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeUnauthorizedException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (401 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeUnauthorizedException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-        if (is_null($contentType) === false && (403 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeForbiddenException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (403 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeForbiddenException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-        if (is_null($contentType) === false && (404 === $status && mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \JiraSdk\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeNotFoundException($serializer->deserialize($body, 'JiraSdk\\Model\\ErrorCollection', 'json'), $response);
+        if ((null === $contentType) === false && (404 === $status && false !== mb_strpos($contentType, 'application/json'))) {
+            throw new \JiraSdk\Api\Exception\RemoveIssueTypesFromGlobalFieldConfigurationSchemeNotFoundException($serializer->deserialize($body, 'JiraSdk\\Api\\Model\\ErrorCollection', 'json'), $response);
         }
-    }
-    public function getAuthenticationScopes(): array
-    {
-        return array('basicAuth', 'OAuth2');
     }
 }
