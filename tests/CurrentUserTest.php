@@ -28,6 +28,6 @@ class CurrentUserTest extends IntegrationTestCase
         $user = $client->getCurrentUser();
 
         $this->assertInstanceOf(User::class, $user);
-        $this->assertIsString($user->getAccountId());
+        $this->assertEquals($this->getAccountId(), $user->getAccountId());
     }
 }
