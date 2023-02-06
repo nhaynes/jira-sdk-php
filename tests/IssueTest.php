@@ -17,12 +17,15 @@ use JiraSdk\Api\Model\IssueUpdateDetails;
 
 class IssueTest extends IntegrationTestCase
 {
+    /**
+     * @covers \JiraSdk\Api\Client::createIssue
+    */
     public function testCreateIssue()
     {
         $client = $this->createClient();
         $project = $this->getProjectKey();
 
-        $response = $client->createIssue(new IssueUpdateDetails([
+        $issue = $client->createIssue(new IssueUpdateDetails([
             'fields' => [
                 'project' => [
                     'key' => $project,
@@ -31,11 +34,24 @@ class IssueTest extends IntegrationTestCase
                     'name' => 'Task',
                 ],
                 'summary' => 'Integration Test Ticket',
-                'description' => 'This is a ticket created via an integration test',
+                'description' => [
+                    'type' => 'doc',
+                    'version' => 1,
+                    'content' => [
+                        [
+                            'type' => 'paragraph',
+                            'content' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => 'This is a ticket created via an integration test',
+                                ],
+                            ],
+                        ]
+                    ]
+                ],
             ],
         ]));
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringStartsWith($project . '-', $response->getKey());
+        $this->assertStringStartsWith($project . '-', $issue->getKey());
     }
 }

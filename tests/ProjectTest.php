@@ -14,26 +14,45 @@ declare(strict_types=1);
 namespace JiraSdk\Tests;
 
 use JiraSdk\Api\Model\CreateProjectDetails;
+use JiraSdk\Api\Model\ProjectIdentifiers;
 
 class ProjectTest extends IntegrationTestCase
 {
+    /**
+     * @covers \JiraSdk\Api\Client::getAllProjects
+    */
+    public function testGetAllProjects()
+    {
+        $client = $this->createClient();
+
+        $projects = $client->getAllProjects();
+
+        $this->assertIsArray($projects);
+        $this->assertGreaterThan(0, count($projects));
+    }
+
+    /**
+     * @covers \JiraSdk\Api\Client::createProject
+    */
     public function testCreateProject()
     {
         $client = $this->createClient();
 
-        $response = $client->createProject(new CreateProjectDetails([
-            'key' => 'IT',
-            'name' => 'Integration Test',
-            'description' => 'This is a project created via an integration test',
-            'projectTypeKey' => 'software',
-        ]));
+        $details = (new CreateProjectDetails())
+            ->setKey('IT')
+            ->setName('Integration Test')
+            ->setDescription('This is a project created via an integration test')
+            ->setProjectTypeKey('software')
+            ->setLeadAccountId($this->getAccountId());
 
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertInstanceOf(ProjectIdentifiers::class, $response);
-        $this->assertEquals('IT', $response->getKey());
+        $project = $client->createProject($details);
+
+        $this->assertInstanceOf(ProjectIdentifiers::class, $project);
+        $this->assertEquals('IT', $project->getKey());
     }
 
     /**
+     * @covers \JiraSdk\Api\Client::deleteProject
      * @depends testCreateProject
      */
     public function testDeleteProject()
@@ -42,6 +61,6 @@ class ProjectTest extends IntegrationTestCase
 
         $response = $client->deleteProject('IT');
 
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertNull($response);
     }
 }

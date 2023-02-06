@@ -30,14 +30,23 @@ abstract class IntegrationTestCase extends TestCase
         }
     }
 
-    protected function createClient(?string $sitename = null, ?string $token = null): Client
+    protected function createClient(?string $sitename = null, ?string $username = null, ?string $token = null): Client
     {
-        return ClientFactory::create($sitename ?? $this->getSiteName(), $token ?? $this->getToken());
+        return ClientFactory::create(
+            $sitename ?? $this->getSiteName(),
+            $username ?? $this->getUsername(),
+            $token ?? $this->getToken()
+        );
     }
 
     protected function getSiteName(): ?string
     {
         return $_SERVER['JIRA_SITE'] ?? null;
+    }
+
+    protected function getUsername(): ?string
+    {
+        return $_SERVER['JIRA_USERNAME'] ?? null;
     }
 
     protected function getToken(): ?string
@@ -48,5 +57,10 @@ abstract class IntegrationTestCase extends TestCase
     protected function getProjectKey(): string
     {
         return $_SERVER['JIRA_PROJECT'] ?? null;
+    }
+
+    protected function getAccountId(): string
+    {
+        return $_SERVER['JIRA_ACCOUNT_ID'] ?? null;
     }
 }
