@@ -67,7 +67,7 @@ class GetAvatarImageByID extends \JiraSdk\Api\Runtime\Client\BaseEndpoint implem
     public function getExtraHeaders(): array
     {
         if (empty($this->accept)) {
-            return ['Accept' => ['application/json', 'image/png', 'image/svg+xml', '*/*']];
+            return ['Accept' => ['application/json', 'image/png', 'image/svg+xml', '*\/*']];
         }
 
         return $this->accept;
