@@ -15,8 +15,10 @@
     <php>
         <ini name="error_reporting" value="-1" />
         <!--<server name="JIRA_SITE" value="edit_me" />-->
+        <!--<server name="JIRA_USERNAME" value="edit_me" />-->
         <!--<server name="JIRA_TOKEN" value="edit_me" />-->
         <!--<server name="JIRA_PROJECT" value="edit_me" />-->
+        <!--<server name="JIRA_ACCOUNT_ID" value="edit_me" />-->
     </php>
 
     <testsuites>
