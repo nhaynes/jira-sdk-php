@@ -20,7 +20,7 @@ class ProjectTest extends IntegrationTestCase
 {
     /**
      * @covers \JiraSdk\Api\Client::getAllProjects
-    */
+     */
     public function testGetAllProjects()
     {
         $client = $this->createClient();
@@ -28,12 +28,12 @@ class ProjectTest extends IntegrationTestCase
         $projects = $client->getAllProjects();
 
         $this->assertIsArray($projects);
-        $this->assertGreaterThan(0, count($projects));
+        $this->assertGreaterThan(0, \count($projects));
     }
 
     /**
      * @covers \JiraSdk\Api\Client::createProject
-    */
+     */
     public function testCreateProject()
     {
         $client = $this->createClient();
@@ -43,7 +43,8 @@ class ProjectTest extends IntegrationTestCase
             ->setName('Integration Test')
             ->setDescription('This is a project created via an integration test')
             ->setProjectTypeKey('software')
-            ->setLeadAccountId($this->getAccountId());
+            ->setLeadAccountId($this->getAccountId())
+        ;
 
         $project = $client->createProject($details);
 
@@ -53,6 +54,7 @@ class ProjectTest extends IntegrationTestCase
 
     /**
      * @covers \JiraSdk\Api\Client::deleteProject
+     *
      * @depends testCreateProject
      */
     public function testDeleteProject()

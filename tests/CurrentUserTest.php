@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace JiraSdk\Tests;
 
-use JiraSdk\Api\Model\CreateProjectDetails;
 use JiraSdk\Api\Model\User;
 
 class CurrentUserTest extends IntegrationTestCase
 {
     /**
      * @covers \JiraSdk\Api\Client::getCurrentUser
-    */
+     */
     public function testGetAllProjects()
     {
         $client = $this->createClient();

@@ -19,7 +19,7 @@ class IssueTest extends IntegrationTestCase
 {
     /**
      * @covers \JiraSdk\Api\Client::createIssue
-    */
+     */
     public function testCreateIssue()
     {
         $client = $this->createClient();
@@ -46,8 +46,8 @@ class IssueTest extends IntegrationTestCase
                                     'text' => 'This is a ticket created via an integration test',
                                 ],
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
             ],
         ]));
