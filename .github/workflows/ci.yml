@@ -1,0 +1,56 @@
+name: CI
+
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+    schedule:
+        -   cron: '0 0 * * MON'
+
+jobs:
+    check-cs:
+        name: Check Coding Standards
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: PHP-CS-Fixer
+              uses: docker://oskarstark/php-cs-fixer-ga
+              with:
+                  args: --config=.php-cs-fixer.php --diff --dry-run
+
+    tests:
+        name: Test PHP ${{ matrix.php-version }} ${{ matrix.name }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: [ '7.4', '8.0', '8.1' ]
+                composer-flags: [ '' ]
+                name: [ '' ]
+                include:
+                    -   php-version: 7.4
+                        composer-flags: '--prefer-lowest'
+                        name: '(prefer lowest dependencies)'
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, xml
+
+            - name: Install dependencies
+              run: "composer update --no-interaction ${{ matrix.composer-flags }}"
+
+            - name: Run tests
+              run: php vendor/bin/phpunit
+              env:
+                JIRA_SITE: ${{ vars.JIRA_SITE }}
+                JIRA_PROJECT: ${{ vars.JIRA_PROJECT }}
+                JIRA_ACCOUNT_ID: ${{ secrets.JIRA_ACCOUNT_ID }}
+                JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+                JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
