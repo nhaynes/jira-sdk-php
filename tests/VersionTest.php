@@ -19,8 +19,8 @@ class VersionTest extends IntegrationTestCase
 {
     /**
      * @covers \JiraSdk\Api\Client::createVersion
-     * @covers \JiraSdk\Api\Client::getAllVersions
      * @covers \JiraSdk\Api\Client::deleteVersion
+     * @covers \JiraSdk\Api\Client::getAllVersions
      */
     public function testCreateVersion()
     {
