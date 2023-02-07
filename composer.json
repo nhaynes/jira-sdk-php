@@ -31,11 +31,11 @@
         "php-http/message": "^1.13"
     },
     "require-dev": {
-        "jane-php/open-api-3": "^7.4",
         "friendsofphp/php-cs-fixer": "^3.13",
+        "jane-php/open-api-3": "^7.4",
+        "nyholm/psr7": "^1.5",
         "phpunit/phpunit": "^9.5",
-        "symfony/http-client": "^6.0",
-        "nyholm/psr7": "^1.5"
+        "symfony/http-client": "^6.0"
     },
     "scripts": {
         "cs": [
@@ -47,5 +47,8 @@
         "generate-sdk": [
             "vendor/bin/jane-openapi generate --config-file=.jane-openapi.php"
         ]
+    },
+    "config": {
+        "sort-packages": true
     }
 }
