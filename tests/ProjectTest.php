@@ -38,7 +38,7 @@ class ProjectTest extends IntegrationTestCase
     public function testCreateProject()
     {
         $client = $this->createClient();
-        $key = 'IT'.\rand(0, 9999);
+        $key = 'IT' . rand(0, 9999);
 
         $details = (new CreateProjectDetails())
             ->setKey($key)
