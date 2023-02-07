@@ -49,7 +49,7 @@ jobs:
             - name: Run tests
               run: php vendor/bin/phpunit
               env:
-                JIRA_SITE: ${{ vars.JIRA_SITE }}
+                JIRA_SITENAME: ${{ vars.JIRA_SITENAME }}
                 JIRA_PROJECT: ${{ vars.JIRA_PROJECT }}
                 JIRA_ACCOUNT_ID: ${{ secrets.JIRA_ACCOUNT_ID }}
                 JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}

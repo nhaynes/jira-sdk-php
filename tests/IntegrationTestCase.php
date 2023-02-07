@@ -22,7 +22,7 @@ abstract class IntegrationTestCase extends TestCase
     protected function setUp(): void
     {
         if (!$this->getSiteName()) {
-            $this->markTestSkipped('JIRA_SITE env var is not present, skipping integration test.');
+            $this->markTestSkipped('JIRA_SITENAME env var is not present, skipping integration test.');
         }
 
         if (!$this->getToken()) {
@@ -41,7 +41,7 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function getSiteName(): ?string
     {
-        return $_SERVER['JIRA_SITE'] ?? null;
+        return $_SERVER['JIRA_SITENAME'] ?? null;
     }
 
     protected function getUsername(): ?string
