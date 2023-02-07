@@ -33,13 +33,15 @@ class ProjectTest extends IntegrationTestCase
 
     /**
      * @covers \JiraSdk\Api\Client::createProject
+     * @covers \JiraSdk\Api\Client::deleteProject
      */
     public function testCreateProject()
     {
         $client = $this->createClient();
+        $key = 'IT'.\rand(0, 9999);
 
         $details = (new CreateProjectDetails())
-            ->setKey('IT')
+            ->setKey($key)
             ->setName('Integration Test')
             ->setDescription('This is a project created via an integration test')
             ->setProjectTypeKey('software')
@@ -50,18 +52,8 @@ class ProjectTest extends IntegrationTestCase
 
         $this->assertInstanceOf(ProjectIdentifiers::class, $project);
         $this->assertEquals('IT', $project->getKey());
-    }
 
-    /**
-     * @covers \JiraSdk\Api\Client::deleteProject
-     *
-     * @depends testCreateProject
-     */
-    public function testDeleteProject()
-    {
-        $client = $this->createClient();
-
-        $response = $client->deleteProject('IT');
+        $response = $client->deleteProject($key);
 
         $this->assertNull($response);
     }
