@@ -38,11 +38,12 @@ class ProjectTest extends IntegrationTestCase
     public function testCreateProject()
     {
         $client = $this->createClient();
-        $key = 'IT' . rand(0, 9999);
+        $num = rand(0, 9999);
+        $key = 'IT' . $num;
 
         $details = (new CreateProjectDetails())
             ->setKey($key)
-            ->setName('Integration Test')
+            ->setName("Integration Test - {$num}")
             ->setDescription('This is a project created via an integration test')
             ->setProjectTypeKey('software')
             ->setLeadAccountId($this->getAccountId())
@@ -51,7 +52,7 @@ class ProjectTest extends IntegrationTestCase
         $project = $client->createProject($details);
 
         $this->assertInstanceOf(ProjectIdentifiers::class, $project);
-        $this->assertEquals('IT', $project->getKey());
+        $this->assertEquals($key, $project->getKey());
 
         $response = $client->deleteProject($key);
 
